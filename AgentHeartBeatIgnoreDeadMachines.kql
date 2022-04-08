@@ -11,7 +11,7 @@ AzureActivity
 // Common query that looks for heartbeat status for agents
     Heartbeat 
     | where TimeGenerated > ago(180d) 
-    | summarize ["Last Heartbeat"]=arg_max(TimeGenerated,*) by Resource 
+    | summarize ["Last Heartbeat"]=arg_max(TimeGenerated,*) by Computer
     | where ["Last Heartbeat"] < ago(1h) 
     | extend ResourceName=tolower(Resource) 
     | project ['Last Heartbeat'],ResourceName,ResourceGroup, Category, Computer, OSType
