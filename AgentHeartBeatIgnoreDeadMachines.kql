@@ -1,0 +1,18 @@
+// This query shows the list of agents that are not sending heartbeat from past 1 hour
+// The query ignores the agents that are deprovisioned and poweredoff
+AzureActivity 
+| where TimeGenerated > ago(180d)   //Look for past 180 days logs from azureactivity table.
+| where OperationNameValue has_any ("Microsoft.Compute/virtualMachines/powerOff/action", "Microsoft.Compute/virtualMachines/delete", "Microsoft.Compute/virtualMachines/deallocate/action","Microsoft.Compute/virtualMachineScaleSets/delete/action","Microsoft.Compute/virtualMachineScaleSets/deallocate/action","Microsoft.SqlVirtualMachine/sqlVirtualMachines/delete")
+| summarize arg_max(TimeGenerated,*) by _ResourceId  // Take the most recent operation performed on resource.
+| extend ResourceName=tolower(tostring(split(_ResourceId,'/')[-1])) //Extract resource name 
+| distinct ResourceName 
+| join kind=rightanti 
+ ( 
+// Common query that looks for heartbeat status for agents
+    Heartbeat 
+    | where TimeGenerated > ago(180d) 
+    | summarize ["Last Heartbeat"]=arg_max(TimeGenerated,*) by Resource 
+    | where ["Last Heartbeat"] < ago(1h) 
+    | extend ResourceName=tolower(Resource) 
+    | project ['Last Heartbeat'],ResourceName,ResourceGroup, Category, Computer, OSType
+ ) on ResourceName 
