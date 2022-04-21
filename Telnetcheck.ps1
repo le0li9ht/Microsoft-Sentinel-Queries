@@ -1,6 +1,7 @@
-﻿$ipipchecklist = Get-Content -Path C:\Users\MBUSER\Desktop\auto\telnet.txt
+$path=args[1]
+$ipipchecklist = Get-Content -Path $path
 $Port=$args[0]
-if ($Port -eq $null){
+if (($Port -eq $null) -or ($path -eq $null)) {
         Write-Output "Please pass port number as argument
         `nRunas below:
         Telnetcheck.ps1 <portnumber> 
