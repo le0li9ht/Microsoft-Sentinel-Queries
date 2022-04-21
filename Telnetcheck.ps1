@@ -25,6 +25,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 $Socket.Connect($file, $Port)
 #Continue: (Default) Displays the error message and continues executing.
 $ErrorActionPreference = 'SilentlyContinue'
+#If the connection to the port is success print port is open or closed or filtered.
 if ($Socket.Connected) {
    "For ${file} Port $Port is open"
     $Socket.Close()
@@ -32,6 +33,8 @@ if ($Socket.Connected) {
 else {
             "For ${file} Port $Port is closed or filtered" 
         }
+#close the socket
 $Socket.close()
+#put null value in Socket
 $Socket = $null
 }}
