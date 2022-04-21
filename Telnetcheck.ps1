@@ -6,7 +6,9 @@ if (($Port -eq $null) -or ($path -eq $null)) {
         Write-Output "Please pass port number and Iplist file path as arguments
         `nRunas below:
         Telnetcheck.ps1 <portnumber> <filepath>
-        `n If you want to export output to a file then run as `nTelnetcheck.ps1 <portnumber> <filepath> >output.txt"
+        `n If you want to export output to a file then run as 
+        `n
+        Telnetcheck.ps1 <portnumber> <filepath> >output.txt"
         exit          
 }
 #read the IPlistfile
