@@ -1,0 +1,9 @@
+AzureActivity 
+| where TimeGenerated > ago(24h)  // you can change the time
+| where Caller contains "<migrationperson mail>" //give the migration person e-mail 
+| where OperationNameValue contains "microsoft.insights/workbooks/write" 
+| summarize arg_max(TimeGenerated, *) by Resource //summarize by the resource
+| extend WorkbookID=Resource  
+| where ActivityStatus contains "Succeeded"
+| where isnotempty(WorkbookID) 
+| project TimeGenerated,Caller,WorkbookID, ActivityStatus
