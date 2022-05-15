@@ -1,7 +1,7 @@
+//This query shows if any new workbook is created in Microsoft Sentinel
 AzureActivity 
-| where TimeGenerated > ago(24h)  // you can change the time
-| where Caller contains "<migrationperson mail>" //give the migration person e-mail 
-| where OperationNameValue contains "microsoft.insights/workbooks/write" 
+| where Caller contains "<migrationperson mail>" //Give the migration person e-mail 
+| where OperationNameValue contains "microsoft.insights/workbooks/write"  // workbook creation 
 | summarize arg_max(TimeGenerated, *) by Resource //summarize by the resource
 | extend WorkbookID=Resource  
 | where ActivityStatus contains "Succeeded"
