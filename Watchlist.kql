@@ -1,6 +1,0 @@
-Watchlist 
-| summarize arg_max(TimeGenerated, *) by WatchlistId 
-| extend Creator=CreatedBy.email 
-| where Creator contains "<migration query>" // Give person's e-mail who is migrating. 
-| extend Lastupdatedby=UpdatedBy.email 
-| project TimeGenerated,WatchlistId, WatchlistAlias, Creator, Type, Lastupdatedby
