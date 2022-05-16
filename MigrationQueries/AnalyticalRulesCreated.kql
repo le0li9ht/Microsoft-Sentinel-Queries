@@ -1,4 +1,4 @@
-//This query shows if any new analytical rule is created in Mzure Sentinel
+//This query shows if any new analytical rule is created in Microsoft Sentinel
 AzureActivity 
 | where OperationNameValue contains "Microsoft.SecurityInsights/alertRules/write"  //analytical rule write operation
 | where ActivityStatusValue contains "Success" 
