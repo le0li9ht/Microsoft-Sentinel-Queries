@@ -1,4 +1,4 @@
-//This query finds out any if any new query packs are created 
+//This query finds out if any new query packs are created 
 AzureActivity 
 | where TimeGenerated > ago(340d) 
 | where OperationNameValue contains "Microsoft.OperationalInsights/queryPacks/write" // find all querypack write operations
