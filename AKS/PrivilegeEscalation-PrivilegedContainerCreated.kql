@@ -1,0 +1,28 @@
+//Privileged Container Created: 
+AzureDiagnostics 
+| where TimeGenerated > ago(24h) 
+| where Category =="kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb=='create' 
+| where logs.objectRef.resource=="pods" 
+| where logs.responseStatus.code==201 
+| mv-expand containerarray=logs.requestObject.spec.containers 
+| where containerarray.securityContext contains "\"privileged\":true" 
+| project logs.requestReceivedTimestamp, 
+logs.stageTimestamp, ContainerName=containerarray.name,
+ContainerImage=containerarray.image,
+ContainerSecurityContext=containerarray.securityContext,
+ContainerPorts=containerarray.ports,
+stage=logs.stage,
+requestURI=logs.requestURI,
+verb=logs.verb,
+sourceIPs=logs.sourceIPs,
+userAgent=logs.userAgent,
+ResponseStatus=logs.responseStatus.code,
+Container_volumemount=containerarray.volumeMounts,
+logs.requestObject.spec.volumes,
+SubjectUsername=logs.user.username,
+SubjectUserGroup=logs.user.groups,
+pod_s,
+logs.objectRef,
+logs.requestObject

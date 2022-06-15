@@ -1,0 +1,21 @@
+//Cluster admin role binding 
+//Detects: kubectl create clusterrolebinding sa-account-admin --clusterrole=cluster-admin 
+AzureDiagnostics 
+| where Category =="kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb contains 'create' 
+| where logs.requestObject.kind=="ClusterRoleBinding" 
+| where logs.requestObject.roleRef.name=='cluster-admin' 
+| project logs.stageTimestamp,
+logs.requestReceivedTimestamp,
+logs.verb,
+logs.stage,
+logs.responseStatus.code,
+logs.requestObject.kind,
+logs.requestObject.roleRef.name,
+logs.requestObject.roleRef.kind,
+logs.requestObject.subjects,
+logs.user.username,
+logs.user.groups,
+logs.sourceIPs,
+logs.userAgent

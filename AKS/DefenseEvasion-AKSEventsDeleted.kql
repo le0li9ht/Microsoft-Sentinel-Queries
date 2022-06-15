@@ -1,0 +1,6 @@
+//Defense Evasion - AKS events deleted 
+AzureDiagnostics 
+| where Category=="kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb=="delete" or logs.verb=="deletecollection" 
+| where logs.objectRef.resource contains "events" and logs.responseStatus.code==200

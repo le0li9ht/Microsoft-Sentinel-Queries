@@ -1,0 +1,7 @@
+//Persistence-Cron job created 
+AzureDiagnostics 
+| where Category == "kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb == "create" 
+| where logs.objectRef.resource contains "cronjobs" or logs.requestObject.kind=="CronJob" 
+| where logs.responseStatus.code==201

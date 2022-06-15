@@ -1,0 +1,10 @@
+//Kubernetes privileged container via runasuser 
+AzureDiagnostics 
+| where Category=="kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb=="create" 
+| where logs.objectRef.resource contains "pods" 
+| where log_s contains "runAsUser" 
+| where logs.stage contains "ResponseComplete" 
+| where logs.responseStatus.code==201 
+| where logs.responseObject.spec.containers contains "\"runAsUser\":0," and  logs.responseObject.spec.containers  !contains "\"readOnlyRootFilesystem\":true"

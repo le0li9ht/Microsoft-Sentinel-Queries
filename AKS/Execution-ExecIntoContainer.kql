@@ -1,0 +1,12 @@
+//Exec into a container. 
+AzureDiagnostics 
+ | where TimeGenerated > ago(24h) 
+ | where Category =="kube-audit" 
+ | extend logs=parse_json(log_s) 
+ | where logs.verb contains 'create' 
+ | where logs.objectRef.subresource=="exec" 
+ | where logs.responseStatus.code==101 
+ | extend url=url_decode(tostring(logs.requestURI)) 
+ | parse kind=relaxed  url with * "?command=" command  "&command=" arg1 "&container=" * 
+ | where url contains "base64" or url contains "wget" or url contains "bash" or url contains "kubectl" or url contains "wget" or url contains "bash" or url contains "kubectl" 
+ | project TimeGenerated, pod_s,logs.stage, logs.verb,logs.responseStatus.code,logs.sourceIPs,logs.ojbectRef.resource, logs.objectRef.namespace, logs.user.username,logs.user.groups, podname=logs.objectRef.name, url, command, arg1

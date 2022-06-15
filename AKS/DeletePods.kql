@@ -1,0 +1,8 @@
+//Successfully Deleted Pod
+AzureDiagnostics
+| where Category=="kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb contains "delete" and logs.stage contains "ResponseComplete" 
+| where logs.responseStatus.code==200 
+| where logs.objectRef.resource contains "pods" 
+| project logs.requestReceivedTimestamp, logs.stageTimestamp, verb=logs.verb, stage=logs.stage, requestURI=logs.requestURI, SourceIP=logs.sourceIPs, UserAgent=logs.userAgent, User=logs.user.username, Group=logs.user.groups, podname=logs.objectRef.name, namespace=logs.objectRef.namespace, ResponseStatusCode=logs.responseStatus.code, containers=logs.responseObject.spec.containers, pod_s

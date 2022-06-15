@@ -1,0 +1,7 @@
+//Pod/Deployments/Daemonsets created in KubeNamespace. 
+AzureDiagnostics 
+| where Category == "kube-audit" 
+| extend logs=parse_json(log_s) 
+| where logs.verb=="create" 
+| where logs.requestObject.kind == "Pod" and logs.responseStatus.code==201
+| where logs.objectRef.namespace has_any ("kube-system", "kube-public")
