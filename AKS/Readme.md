@@ -1,2 +1,2 @@
 # Azure Kubernetes Service Usecases
-These usecases may output false positives. Fintune the rules according to your environment.
+These Usecases may output false positives. Finetune the rules according to your environment.
