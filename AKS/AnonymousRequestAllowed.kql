@@ -1,7 +1,0 @@
-//Anonymous Request Allowed 
-//This alert detects if any anonymous request allowed 
-AzureDiagnostics 
-| where Category=="kube-audit" 
-| extend logs=parse_json(log_s) 
-| where logs.user.username contains "system:anonymous" and (logs.annotations["authorization.k8s.io/decision"] !contains "forbid" or logs.responseStatus.code!=403) 
-| project logs.requestReceivedTimestamp, logs.stageTimestamp, verb=logs.verb, stage=logs.stage, requestURI=logs.requestURI, SourceIPs=logs.sourceIPs, logs.userAgent, logs.responseStatus.code, logs.responseStatus.status, logs.responseStatus.message, logs.user.username, logs.objectRef, logs.annotations["authorization.k8s.io/decision"], logs.responseObject
