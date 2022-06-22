@@ -1,4 +1,4 @@
-//Pod/Deployments/Daemonsets created in KubeNamespace. 
+//Pod created in KubeNamespace. 
 //MITRE-Defense Evasion - Pod / container name similarity
 AzureDiagnostics 
 | where Category == "kube-audit" 
