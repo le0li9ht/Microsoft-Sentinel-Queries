@@ -1,0 +1,10 @@
+//This query can be used to alert an user in sentinel when the daily data ingestion volume is more than 200GB 
+//You can change the threshold according to your environment.
+Usage 
+| where TimeGenerated > startofday(ago(1d)) 
+| where StartTime > startofday(ago(1d)) 
+| where IsBillable == true 
+| summarize TotalVolumeGB = sum(Quantity) / 1000 by bin(StartTime, 1d) 
+| summarize Tot=make_list_if(TotalVolumeGB,StartTime==startofday(ago(1d))) 
+| where Tot[0]>200 //threshold.
+| project-rename TotalVolumeRecievedGB=Tot
