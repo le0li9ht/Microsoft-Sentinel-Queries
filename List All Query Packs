@@ -1,0 +1,2 @@
+#List all querypack names via AZ Cli. Replace the value Resourcegroup with your own resourcegroup name.
+Get-AzResource -ResourceGroupName <resourcegroup> | Where-Object -Property ResourceType -eq -Value "Microsoft.OperationalInsights/querypacks" | Select-Object -Property Name
