@@ -1,4 +1,4 @@
-Open Az Cli via CloudShell.
+#Open Az Cli Powershell via CloudShell.
 #Download analytic rules to csv file inside cloudshell.  Replace resourcegroup and workspace name with your own environment names.
 Get-AzSentinelAlertRule -ResourceGroupName "<resourcegroup>" -WorkSpaceName "<workspacename>" | Select-Object  Name, DisplayName, Description, Severity, Enabled | Export-Csv Output.csv 
 # Download the file from cloudshell to host.
