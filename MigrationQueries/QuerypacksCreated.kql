@@ -2,7 +2,7 @@
 AzureActivity 
 | where TimeGenerated > ago(340d) 
 | where OperationNameValue contains "Microsoft.OperationalInsights/queryPacks/write" // find all querypack write operations
-//| where Caller contains "<migration person mail>" //give person's e-mail who is migrating
+| where Caller contains "<migration person mail>" //give person's e-mail who is migrating
 | summarize arg_max(TimeGenerated, *) by ResourceId 
 | where ActivitySubstatusValue contains "Created" 
 | project TimeGenerated,Resource, Caller, CallerIpAddress
