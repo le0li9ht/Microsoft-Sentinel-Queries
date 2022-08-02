@@ -2,7 +2,7 @@
 AzureActivity 
 | where OperationNameValue contains "Microsoft.SecurityInsights/alertRules/write"  //analytical rule write operation
 | where ActivityStatusValue contains "Success" 
-//| where Caller contains "<migration person mail> // give person's e-mail who is migrating 
+| where Caller contains "<migration person mail> // give person's e-mail who is migrating 
 | extend Analytics_Rule_ID = tostring(parse_json(Properties).resource)  //extract ruleID
 | extend Rule_ID=split(Analytics_Rule_ID,'/') 
 | where isempty(Rule_ID[2])==false 
