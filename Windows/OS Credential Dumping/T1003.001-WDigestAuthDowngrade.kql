@@ -10,7 +10,6 @@ SecurityEvent
 | where AuthenticationPackageName contains "WDigest" 
 
 //Identify Wdigest Authentication Downgrade attack: 
-
 SecurityEvent 
 | where EventID==4657 
 //Modified HKEY_LOCAL_MACHINESystemCurrentControlSetControlSecurityProvidersWDigestUseLogonCredential to 1
