@@ -1,0 +1,17 @@
+//Identify Servers Using WDigest authentication method. 
+SecurityEvent 
+| where EventID==4624 
+| where AuthenticationPackageName contains "WDigest" 
+| summarize count() by Computer 
+
+//AT DC - Identify WDigest authentication requests
+SecurityEvent 
+| where EventID==4776 
+| where AuthenticationPackageName contains "WDigest" 
+
+//Identify Wdigest Authentication Downgrade attack: 
+
+SecurityEvent 
+| where EventID==4657 
+//Modified HKEY_LOCAL_MACHINESystemCurrentControlSetControlSecurityProvidersWDigestUseLogonCredential to 1
+| where ObjectName contains "WDigest" and ObjectValueName contains "UseLogonCredential" and NewValue==1
