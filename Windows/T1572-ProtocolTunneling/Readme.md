@@ -6,7 +6,9 @@ Event:1149
 Event:21  
 Event:24  
 Event:25  
-
+  
+  
+[The KQL queries for hunting and detecting this technique](https://github.com/le0li9ht/Microsoft-Sentinel-Queries/blob/main/Windows/T1572-ProtocolTunneling/RDPTunnelViaNgrok.kql)  
 ### How to collect TerminalServices logs into microsoft sentinel
 Go to Microsoft sentinel-> settings->Workspace settings-> Agent Congiruatioon -> Add Windows Event Log and select the logs as shown  
 
