@@ -7,4 +7,5 @@ Event:21
 Event:24  
 Event:25  
 
-
+### How to collect TerminalServices logs into microsoft sentinel
+![alt text](http://url/to/img.png)
