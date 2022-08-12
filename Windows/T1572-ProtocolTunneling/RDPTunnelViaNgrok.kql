@@ -1,1 +1,98 @@
 
+//Sucessful incoming RDP logon via ngrok via 4624
+SecurityEvent
+| where EventID==4624
+| where IpAddress=="::" and LogonType==3
+| project TimeGenerated, SubjectAccount, SourceIP=IpAddress, SourceComputer=WorkstationName,EventID,Activity, TargetAccount, TargetComputer=Computer
+
+
+
+*********** Simple queries - unparsed*******************
+
+//Successful incoming RDP logon via ngrok
+//Event:1149-Remote Desktop Services: User authentication succeeded:
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational"
+| where EventID==1149
+| where RenderedDescription contains "Source Network Address:" and RenderedDescription contains "::%16777216"
+| project TimeGenerated, EventLog, Computer, EventID, RenderedDescription
+
+//Successful incoming RDP logon via ngrok
+//Event:21-Remote Desktop Services: Session logon succeeded
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational"
+| where EventID==21
+| where RenderedDescription contains "Source Network Address: ::%16777216"
+| project TimeGenerated, EventLog,EventID, RenderedDescription, TargetComputer=Computer
+
+
+//RDP Session reconnection via ngrok
+//Event:25-Remote Desktop Services: Session reconnection succeeded
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational"
+| where EventID==25
+| where RenderedDescription contains "Source Network Address: ::%16777216"
+| project TimeGenerated, EventLog,EventID, RenderedDescription, TargetComputer=Computer
+
+
+//RDP Session disconnected for ngrok
+//Event:24-Remote Desktop Services: Session has been disconnected
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational"
+| where EventID==24
+| where RenderedDescription contains "Source Network Address: ::%16777216"
+| project TimeGenerated, EventLog,EventID, RenderedDescription, TargetComputer=Computer
+
+
+
+
+
+
+******Parsed Queries For better Visibility********
+
+//Successful incoming RDP logon via ngrok
+//Event:1149-Remote Desktop Services: User authentication succeeded:
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational"
+| where EventID==1149
+| extend parsedEvent=parse_xml(EventData)
+| extend sourceIP=parsedEvent.DataItem.UserData.EventXML['Param3']
+| extend SourceMachine=parsedEvent.DataItem.UserData.EventXML['Param2']
+| extend TargetUser=parsedEvent.DataItem.UserData.EventXML['Param1']
+| where sourceIP contains "::%16777216"
+| project TimeGenerated, EventID, EventLog, sourceIP, SourceMachine, TargetUser, RenderedDescription
+
+
+//Successful RDP session reconnection via ngrok:
+//Event:25-Remote Desktop Services: Session reconnection succeeded
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational"
+| where EventID==25
+| extend parsedEvent=parse_xml(EventData)
+| extend SourceIP=parsedEvent.DataItem.UserData.EventXML['Address']
+| extend TargetUser=parsedEvent.DataItem.UserData.EventXML['User']
+| where SourceIP contains "::%16777216"
+| project TimeGenerated, EventID, EventLog, SourceIP, TargetUser, RenderedDescription
+
+//RDP Session Disconnected via ngrok
+//Event:24-Remote Desktop Services: Session has been disconnected
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational"
+| where EventID==24
+| extend parsedEvent=parse_xml(EventData)
+| extend SourceIP=parsedEvent.DataItem.UserData.EventXML['Address']
+| extend TargetUser=parsedEvent.DataItem.UserData.EventXML['User']
+| where SourceIP contains "::%16777216"
+| project TimeGenerated, EventID, EventLog, SourceIP, TargetUser, RenderedDescription
+
+
+// RDP Successful logon via ngrok
+//Event:21-Remote Desktop Services: Session logon succeeded
+Event
+| where EventLog contains "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational"
+| where EventID==21
+| extend parsedEvent=parse_xml(EventData)
+| extend SourceIP=parsedEvent.DataItem.UserData.EventXML['Address']
+| extend TargetUser=parsedEvent.DataItem.UserData.EventXML['User']
+| where SourceIP contains "::%16777216"
+| project TimeGenerated, EventID, EventLog, SourceIP, TargetUser, RenderedDescription
