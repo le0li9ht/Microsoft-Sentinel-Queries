@@ -1,4 +1,4 @@
-### RDP tunneing via ngrok can be detected using following event ID's  
+### RDP tunneling via ngrok can be detected using following event ID's  
 Windows Security Auditing  
 Event:4624  
 Application and service logs -> Microsoft -> Windows -> TerminalServices - (LocalsessionManager/RemoteConnectionManager)  
