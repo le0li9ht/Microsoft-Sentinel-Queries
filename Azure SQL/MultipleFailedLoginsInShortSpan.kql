@@ -1,7 +1,7 @@
 //Multiple Login Failures In Shortspan(10 min) of time 
 //This alert detects if any multiple failed login attempts are happening for a user in 10 min timeperiod 
 // refer https://docs.microsoft.com/en-us/sql/relational-databases/event-classes/audit-login-failed-event-class?view=sql-server-ver16 
-let timeframe=24h; 
+let timeframe=10m; 
 let threshold=5;  
 AzureDiagnostics 
 | where TimeGenerated> ago(timeframe) 
