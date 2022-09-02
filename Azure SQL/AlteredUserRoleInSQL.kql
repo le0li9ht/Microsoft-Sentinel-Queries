@@ -4,4 +4,5 @@ AzureDiagnostics
 | where TimeGenerated> ago(timeframe) 
 | where Category contains "SQLSecurityAuditEvents" 
 | where statement_s contains "alter role" and statement_s contains "add member" 
-| project TimeGenerated, event_time_t,ClientComputer=host_name_s, ClientApp=application_name_s, Server=LogicalServerName_s,succeeded_s, client_ip_s,User=server_principal_name_s, database_name_s, Action=statement_s, connection_id_g
+| parse statement_s with * "ADD MEMBER [" AddedMember "]" * 
+| project TimeGenerated, event_time_t,ClientComputer=host_name_s, ClientApp=application_name_s,client_ip_s, Server=LogicalServerName_s, AddedMember, User=server_principal_name_s, database_name_s, Action=statement_s, connection_id_g
