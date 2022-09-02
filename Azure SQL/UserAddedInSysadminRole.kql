@@ -1,0 +1,10 @@
+//User Added In SysAdmin Role
+//Applies to SQL Managed Instance
+let timeframe=24h; 
+AzureDiagnostics 
+| where TimeGenerated> ago(timeframe) 
+| where Category contains "SQLSecurityAuditEvents" 
+| where statement_s contains "Alter Server role" and statement_s contains "add member" 
+| where object_name_s contains "sysadmin"
+| parse kind=regex flags=i statement_s with * "ADD MEMBER \\[" AddedMember "\\]" * 
+| project TimeGenerated, event_time_t,ClientComputer=host_name_s, ClientApp=application_name_s,client_ip_s, Server=LogicalServerName_s, AddedMember, User=server_principal_name_s, database_name_s, Action=statement_s, connection_id_g
