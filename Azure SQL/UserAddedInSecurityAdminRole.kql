@@ -1,4 +1,5 @@
 //User Added In SecurityAdmin Role
+//Applies to SQL Managed Instance
 let timeframe=24h; 
 AzureDiagnostics 
 | where TimeGenerated> ago(timeframe) 
