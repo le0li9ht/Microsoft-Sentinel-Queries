@@ -7,6 +7,7 @@ AzureDiagnostics
 | where statement_s contains "sp_addrolemember" and statement_s has_any ("loginmanager","dbmanager") 
 | where succeeded_s contains "true" 
 | parse statement_s with * "sp_addrolemember " role  "," user 
+//strip N'(nvarchar) character refer- https://stackoverflow.com/questions/10025032/what-is-the-meaning-of-the-prefix-n-in-t-sql-statements-and-when-should-i-use-it
 | extend user=split(user, "'")[1] 
 | extend role=split(role,"'")[1] 
 | where isnotempty(user) and isnotempty(role) 
