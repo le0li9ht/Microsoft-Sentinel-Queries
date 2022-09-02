@@ -6,6 +6,6 @@ AzureDiagnostics
 | where Category contains "SQLSecurityAuditEvents" 
 | where statement_s contains "Create Login" 
 | where succeeded_s contains "true" 
-| parse statement_s with * "CREATE LOGIN [" TargetUser "]" * 
+| parse kind=regex flags=i statement_s with * "CREATE LOGIN \\[" TargetUser "\\]" * 
 | where isnotempty(TargetUser) 
 | project TimeGenerated,event_time_t, ClientIP=client_ip_s,ClientHostname=host_name_s, ClientApp=application_name_s, TargetServer=server_instance_name_s,Createdby=server_principal_name_s,CreatedUser=TargetUser,database_name_s, succeeded_s
