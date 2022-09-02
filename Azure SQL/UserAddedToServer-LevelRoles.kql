@@ -1,0 +1,13 @@
+//User added with server-level roles such as loginmanager or dbmanager or both.
+//Note: dbmanager and loginmanager roles do not pertain to SQL Managed Instance deployments.
+let timeframe=24h; 
+AzureDiagnostics 
+| where TimeGenerated> ago(timeframe) 
+| where Category contains "SQLSecurityAuditEvents" 
+| where statement_s contains "sp_addrolemember" and statement_s has_any ("loginmanager","dbmanager") 
+| where succeeded_s contains "true" 
+| parse statement_s with * "sp_addrolemember " role  "," user 
+| extend user=split(user, "'")[1] 
+| extend role=split(role,"'")[1] 
+| where isnotempty(user) and isnotempty(role) 
+| project TimeGenerated, event_time_t, ClientApp=application_name_s, ClientIP=client_ip_s, ClientHost=host_name_s, Assignedrole=role,AssignedTo=user, Server=LogicalServerName_s, Database=database_name_s, Subject=server_principal_name_s,  succeeded_s, statement_s
