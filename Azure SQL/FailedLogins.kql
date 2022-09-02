@@ -3,4 +3,5 @@
 AzureDiagnostics 
 | where Category contains "SQLSecurityAuditEvents" 
 | where action_name_s contains "LOGIN FAILED" //succeeded_s field always false for failed logins. 
-| project TimeGenerated,event_time_t, ClientApp=application_name_s, ClientHostname=host_name_s,ClientIP=client_ip_s, Username=server_principal_name_s, action_name_s,action_id_s, Action=statement_s, ServerName=server_instance_name_s,succeeded_s, connection_id_g, additional_information_s, database_principal_name_s, database_principal_id_d, session_id_d, requestResourceId_s, AdditionalFields.database_transaction_id
+| extend additional=parse_xml(additional_information_s)
+| project TimeGenerated,event_time_t, ClientApp=application_name_s, ClientHostname=host_name_s,ClientIP=client_ip_s, Username=server_principal_name_s, Action=action_name_s,action_id_s, statement_s, ServerName=server_instance_name_s,succeeded_s,errorcode=additional.action_info.error,additional_information_s, database_name_s,connection_id_g
