@@ -4,6 +4,6 @@ AzureDiagnostics
 | where TimeGenerated> ago(timeframe) 
 | where Category contains "SQLSecurityAuditEvents" 
 | where statement_s contains "DROP DATABASE" 
-| parse statement_s with * "DROP DATABASE [" DeletedDatabase "]" * 
+| parse kind=regex flags=i statement_s with * "DROP DATABASE \\[" DeletedDatabase "\\]" * 
 | where succeeded_s contains "true" 
 | project TimeGenerated, event_time_t,ClientApp=application_name_s, ClientIP=client_ip_s, ClientComputer=host_name_s, ClientName=server_principal_name_s, TargetServer=server_instance_name_s,Action=action_name_s, DeletedDatabase,Statement=statement_s, connection_id_g
