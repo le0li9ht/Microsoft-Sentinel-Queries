@@ -1,4 +1,5 @@
 //Database Authentication Failed
+//SideNote:Successful logon: 18453, 18454, 18455  Failure logon: 18456
 let timeframe=90d; 
 AzureDiagnostics 
 | where TimeGenerated> ago(timeframe) 
