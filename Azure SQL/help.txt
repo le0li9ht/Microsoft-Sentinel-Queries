@@ -1,2 +1,0 @@
-references:
-https://sqlquantumleap.com/reference/server-audit-filter-values-for-action_id/
