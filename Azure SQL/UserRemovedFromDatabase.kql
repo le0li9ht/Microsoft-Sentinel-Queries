@@ -4,5 +4,5 @@ AzureDiagnostics
 | where TimeGenerated> ago(timeframe) 
 | where Category contains "SQLSecurityAuditEvents" 
 | where statement_s contains "alter role" and statement_s contains "drop member" 
-| parse statement_s with * "DROP MEMBER [" DroppedUser "]" * 
+| parse kind=regex flags=i statement_s with * "DROP MEMBER \\[" DroppedUser "\\]" * 
 | project TimeGenerated, event_time_t,ClientComputer=host_name_s, ClientApp=application_name_s,client_ip_s, Server=LogicalServerName_s, DroppedUser, User=server_principal_name_s, database_name_s, Action=statement_s, connection_id_g
