@@ -1,4 +1,4 @@
-//New User Created Successfully 
+//New Login Created Successfully 
 //refer https://docs.microsoft.com/en-us/sql/relational-databases/event-classes/audit-login-failed-event-class?view=sql-server-ver16 
 let timeframe=24h; 
 AzureDiagnostics
