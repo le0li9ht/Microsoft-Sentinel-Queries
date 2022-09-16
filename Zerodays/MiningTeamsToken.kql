@@ -1,5 +1,6 @@
 // If any process other than Teams.exe accesses these files, it indicates that the stored data is being accessed outside the context of the Teams application.
 // %AppData%\Microsoft\Teams\Cookies
+// https://www.vectra.ai/blogpost/undermining-microsoft-teams-security-by-mining-tokens
 // %AppData%\Microsoft\Teams\Local Storage\leveldb
 
 SecurityEvent 
