@@ -1,0 +1,9 @@
+// If any process other than Teams.exe accesses these files, it indicates that the stored data is being accessed outside the context of the Teams application.
+// %AppData%\Microsoft\Teams\Cookies
+// %AppData%\Microsoft\Teams\Local Storage\leveldb
+
+SecurityEvent 
+| where TimeGenerated > ago(90d) 
+| where EventID==4663 
+| where ObjectName contains "\\Microsoft\\Teams\\Cookies" or ObjectName contains "\\Microsoft\\Teams\\Local Storage\\leveldb" 
+| where ProcessName !contains "Teams.exe"
