@@ -1,0 +1,3 @@
+# Count of events ingested  
+# Same data displayed on overview page of the azure sentinel
+search * | summarize AggregatedValue = count() by Type | summarize  sum(AggregatedValue)
