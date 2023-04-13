@@ -2,9 +2,18 @@
 //You can change the threshold according to your environment.
 Usage 
 | where TimeGenerated > startofday(ago(1d)) 
-| where StartTime > startofday(ago(1d)) 
+| where StartTime >= startofday(ago(1d)) 
 | where IsBillable == true 
 | summarize TotalVolumeGB = sum(Quantity) / 1000 by bin(StartTime, 1d) 
 | summarize Tot=make_list_if(TotalVolumeGB,StartTime==startofday(ago(1d))) 
 | where Tot[0]>200 //threshold.
 | project-rename TotalVolumeRecievedGB=Tot
+
+//Or below query also works.
+
+Usage
+| where TimeGenerated > startofday(ago(1d))
+| where StartTime >= startofday(ago(1d)) and EndTime <= startofday(now())
+| where IsBillable == true
+| summarize TotalVolumeGB = sum(Quantity) / 1000
+| where TotalVolumeGB >200
