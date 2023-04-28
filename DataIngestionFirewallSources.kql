@@ -1,3 +1,4 @@
+//Data Ingestion For Yesterday
 CommonSecurityLog
 | where TimeGenerated >= startofday(ago(1d)) and TimeGenerated <= startofday(now())
 | where _isBillable=true
