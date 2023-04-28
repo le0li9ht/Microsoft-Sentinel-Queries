@@ -1,4 +1,4 @@
-//Data Ingestion For Yesterday
+//Data Ingestion Volume For Each Network Security Resources.
 CommonSecurityLog
 | where TimeGenerated >= startofday(ago(1d)) and TimeGenerated <= startofday(now())
 | where _isBillable=true
