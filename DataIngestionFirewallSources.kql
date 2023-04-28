@@ -1,0 +1,5 @@
+CommonSecurityLog
+| where TimeGenerated >= startofday(ago(1d)) and TimeGenerated <= startofday(now())
+| where _isBillable=true
+| summarize BillableSizeGB=sum(_BilledSize)/1000000000 by DeviceVendor,DeviceProduct
+| extend BillableSizeGB=round(BillableSizeGB,3)
