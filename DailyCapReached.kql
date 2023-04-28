@@ -1,1 +1,6 @@
+//This query determines that you have reached daily cap.
+//Daily cap helps you to reduce ingestion cost by limiting the ingestion based on daily cap limit. By default it works 100GB/day.
+//Note: security events are consistently stored, irrespective of the dailycap.
+//TroubleshootLogIngestion: Suppose your data source working fine and generating logs but they are not being ingested to sentinel properly this could also be one of the reason where your Daily cap may be reached to its maximum
+
 _LogOperation | where Category =~ "Ingestion" | where Detail contains "OverQuota" 
