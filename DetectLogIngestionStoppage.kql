@@ -12,7 +12,7 @@ SecurityEvent
 | summarize SysmonEvents=count()),
 (Syslog
 | where TimeGenerated > ago(1h)
-| summarize SymantecEvents=count()),
+| summarize Syslogevents=count()),
 (CommonSecurityLog
 | where TimeGenerated > ago(1h)
 | where DeviceProduct=="ASM"
@@ -29,7 +29,7 @@ SecurityEvent
 DataIngestionMultipleSources
 | project IngestionStatus=case(
 WindowsSecurityEvents<1, "WindowsSecurityEventsStopped",
-SymantecEvents<1, "SymantecEventsStopped",
+Syslogevents<1, "SyslogeventsStopped",
 SysmonEvents<1, "WindowsSysmonEventsStopped",
 F5_ASMEvents<1, "F5ASMEventsStopped",
 PaloAltoEvents<1,"PaloAltoEventsStopped",
