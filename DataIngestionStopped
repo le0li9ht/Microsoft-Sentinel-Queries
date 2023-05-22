@@ -1,0 +1,38 @@
+// This query looks for multiple data sources and returns if any of the data sources have not been sending logs for the past 1 hour.
+// You can customize this query by adding many tables under the union section to monitor other data sources.
+// While creating the analytic query use the dynamic alert details section for generating alert for each data source. {IngestionStatus}
+
+let DataIngestionMultipleSources =(union isfuzzy=true
+(
+SecurityEvent
+| where TimeGenerated > ago(1h)
+| summarize WindowsSecurityEvents=count()),
+(WindowsEvent
+| where TimeGenerated > ago(1h)
+| summarize SysmonEvents=count()),
+(Syslog
+| where TimeGenerated > ago(1h)
+| summarize SymantecEvents=count()),
+(CommonSecurityLog
+| where TimeGenerated > ago(1h)
+| where DeviceProduct=="ASM"
+| summarize F5_ASMEvents=count()),
+(CommonSecurityLog
+| where TimeGenerated > ago(1h)
+| where DeviceProduct=="PAN-OS"
+| summarize PaloAltoEvents=count()),
+(CommonSecurityLog
+| where TimeGenerated > ago(1h)
+| where DeviceProduct=="Firepower"
+| summarize CiscoFirePowerEvents=count())
+);
+DataIngestionMultipleSources
+| project IngestionStatus=case(
+WindowsSecurityEvents<1, "WindowsSecurityEventsStopped",
+SymantecEvents<1, "SymantecEventsStopped",
+SysmonEvents<1, "WindowsSysmonEventsStopped",
+F5_ASMEvents<1, "F5ASMEventsStopped",
+PaloAltoEvents<1,"PaloAltoEventsStopped",
+CiscoFirePowerEvents<1, "CiscoFirePowerEventsStopped",
+"IngestionSuccess")
+| where IngestionStatus!="IngestionSuccess"
