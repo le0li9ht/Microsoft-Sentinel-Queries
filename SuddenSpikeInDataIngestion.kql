@@ -13,7 +13,7 @@ Usage
 
 Usage
 | where TimeGenerated > startofday(ago(1d))
-| where StartTime >= startofday(ago(1d)) and EndTime < startofday(now())
+| where StartTime >= startofday(ago(1d)) and EndTime <= startofday(now())
 | where IsBillable == true
 | summarize TotalVolumeGB = sum(Quantity) / 1000
 | where TotalVolumeGB >200
