@@ -4,7 +4,7 @@
 
 //New AD user created with 0mega ransomware properites.
 AuditLogs
-| where TimeGenerated >ago(90d)
+| where TimeGenerated >ago(24h)
 | where OperationName=~"Add user" or OperationName =~'Update User'
 | where Result =~ "success"
 | extend properties=TargetResources[0].modifiedProperties
@@ -20,7 +20,7 @@ AuditLogs
 
 //alert on any new AD groups called _0mega_prevent_leakage
 AuditLogs
-| where TimeGenerated >ago(90d)
+| where TimeGenerated >ago(24h)
 | where OperationName=~"Add group" or OperationName=~"Update group"
 | where Result =~ "success"
 | extend properties=TargetResources[0].modifiedProperties
@@ -36,18 +36,19 @@ AuditLogs
 
 //Alert on any new files named PREVENT-LEAKAGE.txt 
 OfficeActivity
+| where TimeGenerated >ago(24h)
 | where Operation in ("FileUploaded",'FileModified','FileRenamed','FileCheckedIn','FileCheckedOut')
 | where SourceFileName contains "PREVENT-LEAKAGE.txt"
 
 //Alert on high volume file uploads or checkin operations with a .txt extension 
 OfficeActivity
-| where TimeGenerated >ago(1h)
+| where TimeGenerated >ago(24h)
 | where Operation in ("FileUploaded",'FileCheckedIn')
 | where SourceFileName contains "txt"
 
 //Alert on any Microsoft 365 activities from a user-agent of sppull or got
 AuditLogs
-| where TimeGenerated >ago(90d)
+| where TimeGenerated >ago(24h)
 | mv-expand AdditionalDetails=AdditionalDetails
 | evaluate bag_unpack(AdditionalDetails)
 | where key has "User-Agent"
@@ -57,12 +58,12 @@ AuditLogs
 
 //Alert on any Microsoft 365 activities from a user-agent of sppull or got
 OfficeActivity
-| where TimeGenerated >ago(90d)
+| where TimeGenerated >ago(24h)
 | where UserAgent has_any ("sppull",'got (https://github.com/sindresorhus/got)')
 
 //alert on any Microsoft 365 activities from a user-agent of sppull or got
 SigninLogs
-| where TimeGenerated >ago(90d)
+| where TimeGenerated >ago(24h)
 | where UserAgent has_any ("sppull",'got (https://github.com/sindresorhus/got)')
 
 
@@ -83,7 +84,7 @@ AuditLogs
 //SiteCollectionAdminAdded
 //The compromised service account granted the 0mega account site collection administrator capabilities to multiple Sharepoint sites and collections, while also removing existing administrators. Over 200 admin removal operations occurred within a 2-hour period.
 OfficeActivity
-| where TimeGenerated >ago(190d)
+| where TimeGenerated >ago(24h)
 | where OfficeWorkload in ('SharePoint','OneDrive') or EventSource =="SharePoint"
 | where Operation contains "SiteCollectionAdminAdded"
 //TargetUser=parse_json(ModifiedProperties)[0].NewValue
@@ -91,7 +92,7 @@ OfficeActivity
 
 //Removing admins from SiteCollectionAdminstrator capability
 OfficeActivity
-| where TimeGenerated >ago(190d)
+| where TimeGenerated >ago(24h)
 | where OfficeWorkload in ('SharePoint','OneDrive') or EventSource =="SharePoint"
 | where Operation contains "SiteCollectionAdminRemoved"
 | project TimeGenerated, Operation, UserId, ClientIP, Site_Url,  TargetUserOrGroupName, TargetUserOrGroupType, IsManagedDevice, UserAgent
