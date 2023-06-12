@@ -18,7 +18,7 @@ AuditLogs
 | summarize min(TimeGenerated),max(TimeGenerated) by TargetUser=tostring(TargetResources[0].userPrincipalName),OperationName, Initiateduser=tostring(InitiatedBy.user.userPrincipalName), InitiatedIP=tostring(InitiatedBy.user.ipAddress), tostring(attributes)
 
 
-//alert on any new AD groups called _0mega_prevent_leakage
+//Alert on any new AD groups called _0mega_prevent_leakage
 AuditLogs
 | where TimeGenerated >ago(24h)
 | where OperationName=~"Add group" or OperationName=~"Update group"
@@ -61,7 +61,7 @@ OfficeActivity
 | where TimeGenerated >ago(24h)
 | where UserAgent has_any ("sppull",'got (https://github.com/sindresorhus/got)')
 
-//alert on any Microsoft 365 activities from a user-agent of sppull or got
+//Alert on any Microsoft 365 activities from a user-agent of sppull or got
 SigninLogs
 | where TimeGenerated >ago(24h)
 | where UserAgent has_any ("sppull",'got (https://github.com/sindresorhus/got)')
