@@ -1,0 +1,97 @@
+//Detection Queries for 0mega ransomware infecting sharepoint.
+//Author: Ashokkrishna
+//Reference:https://www.obsidiansecurity.com/blog/saas-ransomware-observed-sharepoint-microsoft-365/
+
+//New AD user created with 0mega ransomware properites.
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where OperationName=~"Add user" or OperationName =~'Update User'
+| where Result =~ "success"
+| extend properties=TargetResources[0].modifiedProperties
+| mv-expand properties
+| evaluate bag_unpack(properties)
+| extend newValue=tostring(newValue)
+| extend displayName=tostring(displayName)
+| where displayName has_any('DisplayName','MailNickname','Department','StreetAddress')
+| where TargetResources[0].userPrincipalName contains "0mega" or newValue has_any ('0mega','Zero Mega','.onion','0mega-connect.biz')
+| extend attributes=bag_pack(displayName,newValue)
+| summarize min(TimeGenerated),max(TimeGenerated) by TargetUser=tostring(TargetResources[0].userPrincipalName),OperationName, Initiateduser=tostring(InitiatedBy.user.userPrincipalName), InitiatedIP=tostring(InitiatedBy.user.ipAddress), tostring(attributes)
+
+
+//alert on any new AD groups called _0mega_prevent_leakage
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where OperationName=~"Add group" or OperationName=~"Update group"
+| where Result =~ "success"
+| extend properties=TargetResources[0].modifiedProperties
+| mv-expand properties
+| evaluate bag_unpack(properties)
+| extend newValue=tostring(newValue)
+| extend displayName=tostring(displayName)
+| where displayName has_any('DisplayName','MailNickname')
+| where TargetResources[0].userPrincipalName contains "0mega" or newValue has_any ('0mega','_0mega_prevent_leakage')
+| extend attributes=bag_pack(displayName,newValue)
+| summarize min(TimeGenerated),max(TimeGenerated) by TargetUser=tostring(TargetResources[0].userPrincipalName),OperationName, Initiateduser=tostring(InitiatedBy.user.userPrincipalName), InitiatedIP=tostring(InitiatedBy.user.ipAddress), tostring(attributes)
+
+
+//Alert on any new files named PREVENT-LEAKAGE.txt 
+OfficeActivity
+| where Operation in ("FileUploaded",'FileModified','FileRenamed','FileCheckedIn','FileCheckedOut')
+| where SourceFileName contains "PREVENT-LEAKAGE.txt"
+
+//Alert on high volume file uploads or checkin operations with a .txt extension 
+OfficeActivity
+| where TimeGenerated >ago(1h)
+| where Operation in ("FileUploaded",'FileCheckedIn')
+| where SourceFileName contains "txt"
+
+//Alert on any Microsoft 365 activities from a user-agent of sppull or got
+AuditLogs
+| where TimeGenerated >ago(90d)
+| mv-expand AdditionalDetails=AdditionalDetails
+| evaluate bag_unpack(AdditionalDetails)
+| where key has "User-Agent"
+| where value has_any ("sppull",'got')
+| project TimeGenerated, OperationName,Result,InitiatedBy.user.userPrincipalName,InitiatedBy.user.ipAddress, TargetResources[0].userPrincipalName, UserAgent=value
+
+
+//Alert on any Microsoft 365 activities from a user-agent of sppull or got
+OfficeActivity
+| where TimeGenerated >ago(90d)
+| where UserAgent has_any ("sppull",'got (https://github.com/sindresorhus/got)')
+
+//alert on any Microsoft 365 activities from a user-agent of sppull or got
+SigninLogs
+| where TimeGenerated >ago(90d)
+| where UserAgent has_any ("sppull",'got (https://github.com/sindresorhus/got)')
+
+
+//Alert on new AD users that are granted multiple administrative privileges, like Global Administrator, SharePoint Administrator, Exchange Administrator, & Teams Administrator.
+let Roles = dynamic(["Global Administrator", "SharePoint Administrator", "Exchange Administrator", "Teams Administrator"]);
+AuditLogs
+| where TimeGenerated >ago(24h)
+| where OperationName contains "Add member to role"
+| mv-expand TargetResources
+| mv-expand modifeid=TargetResources.modifiedProperties
+| where TargetResources.type=~"User" or TargetResources.type=~"Group"
+| where modifeid.displayName contains "Role.DisplayName"
+| project TimeGenerated,InitiatedUser=InitiatedBy.user.userPrincipalName,InitiatedIp=InitiatedBy.user.ipAddress, TargetUser=tostring(TargetResources.userPrincipalName), AssignedRole=tostring(modifeid.newValue), TargetGroupName=tostring(TargetResources.displayName)
+| summarize PrivilegedRoles=make_set(AssignedRole) by TargetUser, TargetGroupName
+| where array_length(PrivilegedRoles)>1
+| where PrivilegedRoles has_all (Roles)
+
+//SiteCollectionAdminAdded
+//The compromised service account granted the 0mega account site collection administrator capabilities to multiple Sharepoint sites and collections, while also removing existing administrators. Over 200 admin removal operations occurred within a 2-hour period.
+OfficeActivity
+| where TimeGenerated >ago(190d)
+| where OfficeWorkload in ('SharePoint','OneDrive') or EventSource =="SharePoint"
+| where Operation contains "SiteCollectionAdminAdded"
+//TargetUser=parse_json(ModifiedProperties)[0].NewValue
+| project TimeGenerated, Operation, UserId, ClientIP, Site_Url,  TargetUserOrGroupName, TargetUserOrGroupType, IsManagedDevice, UserAgent
+
+//Removing admins from SiteCollectionAdminstrator capability
+OfficeActivity
+| where TimeGenerated >ago(190d)
+| where OfficeWorkload in ('SharePoint','OneDrive') or EventSource =="SharePoint"
+| where Operation contains "SiteCollectionAdminRemoved"
+| project TimeGenerated, Operation, UserId, ClientIP, Site_Url,  TargetUserOrGroupName, TargetUserOrGroupType, IsManagedDevice, UserAgent
