@@ -44,7 +44,7 @@ OfficeActivity
 OfficeActivity
 | where TimeGenerated >ago(24h)
 | where Operation in ("FileUploaded",'FileCheckedIn')
-| where SourceFileName contains "txt"
+| where SourceFileExtension contains "txt"
 
 //Alert on any Microsoft 365 activities from a user-agent of sppull or got
 AuditLogs
