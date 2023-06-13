@@ -4,18 +4,17 @@
 
 //New AD user created with 0mega ransomware properites.
 AuditLogs
-| where TimeGenerated >ago(24h)
+| where TimeGenerated >ago(90d)
 | where OperationName=~"Add user" or OperationName =~'Update User'
 | where Result =~ "success"
 | extend properties=TargetResources[0].modifiedProperties
-| mv-expand properties
-| evaluate bag_unpack(properties)
-| extend newValue=tostring(newValue)
-| extend displayName=tostring(displayName)
-| where displayName has_any('DisplayName','MailNickname','Department','StreetAddress')
-| where TargetResources[0].userPrincipalName contains "0mega" or newValue has_any ('0mega','Zero Mega','.onion','0mega-connect.biz')
-| extend attributes=bag_pack(displayName,newValue)
-| summarize min(TimeGenerated),max(TimeGenerated) by TargetUser=tostring(TargetResources[0].userPrincipalName),OperationName, Initiateduser=tostring(InitiatedBy.user.userPrincipalName), InitiatedIP=tostring(InitiatedBy.user.ipAddress), tostring(attributes)
+| mv-expand  properties
+| evaluate bag_unpack(properties) : (displayName:string, oldValue: string, newValue: string , TenantId : string, SourceSystem : string, TimeGenerated : datetime, ResourceId : string, OperationName : string, OperationVersion : string, Category : string, ResultType : string, ResultSignature : string, ResultDescription : string, DurationMs : long, CorrelationId : string, Resource : string, ResourceGroup : string, ResourceProvider : string, Identity : string, Level : string, Location : string, AdditionalDetails : dynamic, Id : string, InitiatedBy : dynamic, LoggedByService : string, Result : string, ResultReason : string, TargetResources : dynamic, AADTenantId : string, ActivityDisplayName : string, ActivityDateTime : datetime, AADOperationType : string, Type : string)
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName),Initiateduser=tostring(InitiatedBy.user.userPrincipalName), InitiatedIP=tostring(InitiatedBy.user.ipAddress)
+| where displayName has_any('DisplayName','MailNickname','Department','StreetAddress') 
+| where TargetUser contains "0mega" or newValue has_any ('0mega','Zero Mega','.onion','0mega-connect.biz')
+| extend attributes=tostring(bag_pack(displayName,newValue))
+| summarize min(TimeGenerated),max(TimeGenerated) by TargetUser,OperationName,attributes, InitiatedIP, Initiateduser
 
 
 //Alert on any new AD groups called _0mega_prevent_leakage
