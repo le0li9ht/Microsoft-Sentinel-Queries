@@ -1,0 +1,11 @@
+//Scheduled task created and deleted in 5min time.
+SecurityEvent
+| where TimeGenerated > ago(5m) //Usually, the execution time for creating and deleting scheduled tasks is measured in milliseconds when using atexec. However, I am making this use case more convenient for other scenarios as well.
+| where EventID in (4698, 4699)
+| extend EventData = parse_xml(EventData)
+| mv-expand EventDataextend = EventData.EventData.Data
+| where EventDataextend["@Name"] == "TaskName"
+| extend TaskName = tostring(EventDataextend["#text"])
+| summarize EventIDs = make_set(EventID,3), ComputerNames = make_set(Computer,23), StartTime = min(TimeGenerated), EndTime = max(TimeGenerated) by TaskName
+| where array_length(EventIDs) == 2 
+| extend duration=datetime_diff('second', EndTime, StartTime)
