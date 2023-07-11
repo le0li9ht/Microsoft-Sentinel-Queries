@@ -1,0 +1,7 @@
+//Sysmon Events Cleared.
+//MITRE:T1070.001
+WindowsEvent
+| where TimeGenerated >ago(5m)
+| where EventID==104
+| project TimeGenerated, Computer, EventID, BackupPath=tostring(EventData.BackupPath),Channel=tostring(EventData.Channel),SubjectDomainName=tostring(EventData.SubjectDomainName), SubjectUser=tostring(EventData.SubjectUserName)
+| where Channel=="Microsoft-Windows-Sysmon/Operational"
