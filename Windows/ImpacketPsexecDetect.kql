@@ -1,0 +1,14 @@
+//Detect Impacket psexec execution using sysmon logs
+WindowsEvent
+| where TimeGenerated >ago(10m)
+| where EventID in (17,18)
+| project TimeGenerated, Computer, EventID, EventType=tostring(EventData.EventType), Process=tostring(EventData.Image), PipeName=tostring(EventData.PipeName), ProcessGuid=tostring(EventData.ProcessGuid), ProcessId=tostring(EventData.ProcessId), RuleName=tostring(EventData.RuleName), User=tostring(EventData.User), UtcTime=EventData.UtcTime
+| where PipeName startswith @"\RemCom_stdin" or PipeName startswith @"\RemCom_stdout" or PipeName startswith @"\RemCom_stderr"
+
+
+//Detect Impacket psexec execution using 5145 event ID
+SecurityEvent
+| where TimeGenerated >ago(10m)
+| where EventID==5145
+| project TimeGenerated, Computer, IpAddress, IpPort, EventID, Activity, ObjectType, RelativeTargetName, ShareName, SubjectAccount, SubjectDomainName, SubjectUserName, SubjectLogonId, AccessMask, AccountSessionIdentifier, EventData
+| where RelativeTargetName startswith "RemCom_stdin" or RelativeTargetName startswith "RemCom_stdout" or RelativeTargetName  startswith "RemCom_stderr"
