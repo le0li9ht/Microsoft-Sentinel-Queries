@@ -1,0 +1,32 @@
+//Hunt for any key neamed under the path
+WindowsEvent
+| where EventID==14
+| project TimeGenerated, Computer, EventID,EventType=tostring(EventData.EventType), Process=tostring(EventData.Image), User=tostring(EventData.User), OldName=tostring(EventData.TargetObject), NewName=tostring(EventData.NewName), ProcessGuid=tostring(EventData.ProcessGuid), ProcessId=tostring(EventData.ProcessId), RuleName=tostring(EventData.RuleName), UtcTime=tostring(EventData.UtcTime), EventData
+| where OldName startswith @"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController\"
+
+//Hunt for any key creation and modification
+WindowsEvent
+| where EventID in (12,13)
+| project TimeGenerated, Computer, EventID,EventType=tostring(EventData.EventType), Process=tostring(EventData.Image), User=tostring(EventData.User), TargetObject=tostring(EventData.TargetObject), ProcessGuid=tostring(EventData.ProcessGuid), ProcessId=tostring(EventData.ProcessId), RuleName=tostring(EventData.RuleName), UtcTime=tostring(EventData.UtcTime), EventData
+| where TargetObject contains @"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController"
+| summarize count() by EventType
+
+
+//Hunt for modification of default appraiser property
+WindowsEvent
+| where EventID==13
+| project TimeGenerated, Computer, EventID,EventType=tostring(EventData.EventType), Process=tostring(EventData.Image), User=tostring(EventData.User), TargetObject=tostring(EventData.TargetObject),Value=tostring(EventData.Details), ProcessGuid=tostring(EventData.ProcessGuid), ProcessId=tostring(EventData.ProcessId), RuleName=tostring(EventData.RuleName), UtcTime=tostring(EventData.UtcTime), EventData
+| where TargetObject contains @"HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController\Appraiser"
+
+//schedule task run
+vimProcessCreateMicrosoftSysmon 
+| where TargetProcessname contains "schtasks"
+| where CommandLine  has_all("/run", "Microsoft Compatibility Appraiser")
+| project TimeGenerated, User, DvcHostname, ActingProcessName, CommandLine, TargetProcessFilename, TargetProcessName, TargetProcessFileCompany, TargetProcessFileDescription, ActingProcessCommandLine, ActingProcessGuid, TargetProcessGuid, ActingProcessId, TargetProcessId
+
+//Hunt for suspicious child processes of CompatTelRunner
+vimProcessCreateMicrosoftSysmon
+| where TimeGenerated >ago(90d)
+| where ActingProcessName contains "CompatTelRunner.exe" or CommandLine contains "Compatibility"
+| where not(TargetProcessFilename has_any("conhost.exe","CompatTelRunner.exe"))
+| summarize count() by TargetProcessName, CommandLine, TargetProcessFilename
