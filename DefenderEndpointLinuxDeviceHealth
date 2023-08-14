@@ -1,0 +1,21 @@
+//This query checks whether any device are down and not sending the logs to Defender For Endpoint.
+//The below query can be used in Microsoft Sentinel as a scheduled alert for detecting the down devices.
+let hostnames=datatable(DeviceId:string, DeviceName:string) ['<DeviceId>',"<DeviceName>"]; // Give list of Linux machine details that are already onboarded to Defender For Endpoint.
+DeviceInfo 
+| where Timestamp > ago(2h)
+| summarize arg_max(Timestamp, *) by DeviceId
+| where OnboardingStatus == 'Onboarded'
+| where OSPlatform contains "Linux" // If you want to monitor windows devices you can even monitor for Windows by changing the condition.
+| project DeviceName, DeviceId, OnboardingStatus
+| join kind=rightanti (hostnames) on DeviceId
+
+
+
+
+//Defender For Endpoint Sensor Health Status For Linux devices
+DeviceInfo 
+| where Timestamp > ago(2h)
+| summarize arg_max(Timestamp, *) by DeviceId
+| where OnboardingStatus == 'Onboarded'
+| where OSPlatform contains "Linux"
+| where SensorHealthState contains "Inactive"
