@@ -1,0 +1,7 @@
+WindowsEvent
+| where Channel=="Microsoft-Windows-Bits-Client/Operational"
+//3 - job created
+//59-transfer started
+//60-transfer completed
+| where EventID in (3,59,60)
+| project TimeGenerated, Computer, EventID, JobID=strcat(EventData.jobId,EventData.Id), jobOwner=EventData.jobOwner, jobTitle=EventData.jobTitle, ProcessId=EventData.processId,processPath=EventData.processPath, URL=EventData.url, TransferId=EventData.transferId, Name=EventData.name, Peer=EventData.peer, FileTime=EventData.fileTime, fileLength=EventData.fileLength, bytestransferredfrompeer=EventData.bytesTransferredFromPeer, bytesTransferred=EventData.bytesTransferred, bytesTotal=EventData.bytesTotal,bandwidthLimit=EventData.bandwidthLimit,PeerContextInfo=EventData.PeerContextInfo,AdditionalInfoHr=EventData.AdditionalInfoHr,Hresult=EventData.hr
