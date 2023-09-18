@@ -1,0 +1,6 @@
+//Find NTLMv1 usage in the environment or LM
+SecurityEvent
+| where TimeGenerated >ago(90d)
+| where EventID in (4624,4625)
+| where LmPackageName=~"NTLM V1" or LmPackageName=~"LM" 
+| summarize count() by AuthenticationPackageName, AuthenticationProvider, LmPackageName, LogonProcessName, EventID, Computer
