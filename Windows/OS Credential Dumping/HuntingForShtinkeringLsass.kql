@@ -1,0 +1,18 @@
+WindowsEvent
+| where TimeGenerated >ago(90m)
+| where EventID in (12,13)
+| where EventData.TargetObject=~@"HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\DumpType"
+| where EventData.Details==2 or EventData.Details contains "DWORD (0x00000002)"
+| project TimeGenerated, EventID, EventType=tostring(EventData.EventType), Image=tostring(EventData.Image), ProcessId=tostring(EventData.ProcessId),TargetObject=tostring(EventData.TargetObject), User=tostring(EventData.User), UtcTime=tostring(EventData.UtcTime), RuleName=tostring(EventData.RuleName)
+
+
+vimProcessCreateMicrosoftSysmon 
+| where TimeGenerated >ago(90d)
+| where CommandLine has_all ("Werfault", "-p","-ip", "-u","-s")
+| where User=~@"NT AUTHORITY\SYSTEM"
+| where ActingProcessName!~@"C:\Windows\System32\lsass.exe"
+
+vimFileEventMicrosoftSysmonCreated
+| where TimeGenerated >ago(90d)
+| where TargetFilePath startswith @"C:\Windows\System32\config\systemprofile\AppData\Local\CrashDumps"
+| where TargetFileName has_all ("lsass.exe",".dmp")
