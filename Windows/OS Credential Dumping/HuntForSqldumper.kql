@@ -1,0 +1,21 @@
+
+//looking for any full dump and mimikatz supported dump creations via sqldumper.
+vimProcessCreateMicrosoftSysmon 
+| where TimeGenerated >ago(90d)
+| where TargetProcessFilename=~"SQLDumper.exe" or CommandLine contains "sqldumper"
+//0x01100- Full dump file
+//0x01100:40- Mimikatz supported dump file
+| where CommandLine has_any ("01100","01100:40")
+| project ActingProcessName, CommandLine, TargetProcessFilename
+
+//SqlDumper.exe launching lsass.exe child process 
+vimProcessCreateMicrosoftSysmon 
+| where TimeGenerated >ago(90d)
+| where ActingProcessName endswith "SqlDumper.exe"
+| where TargetProcessName contains "lsass"
+| summarize count() by TargetProcessFilename
+
+//looking for the dump file creatons.
+vimFileEventMicrosoftSysmonCreated
+| where TimeGenerated >ago(90d)
+| where TargetFileName contains "SQLDmpr" and TargetFileName endswith ".mdmp"
