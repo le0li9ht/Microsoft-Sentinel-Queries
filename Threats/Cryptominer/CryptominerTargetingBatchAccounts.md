@@ -13,10 +13,12 @@ If your organization doesn't use Batch accounts, the query below can help you id
 ```
 //Batch Account Creation.
 AzureActivity
+| where TimeGenerated >ago(24h)
 | where OperationNameValue=~"MICROSOFT.BATCH/BATCHACCOUNTS/WRITE"
 | where ActivityStatusValue=="Success"
 | project TimeGenerated,OperationNameValue,ActivityStatusValue,ActivityStatus,ActivitySubstatus, ActivitySubstatusValue, BatchAccountName=Properties_d.resource,SubscriptionId=Properties_d.subscriptionId, ResourceGroup, Caller, CallerIpAddress,CorrelationId
 | join kind=leftsemi (AzureActivity
+| where TimeGenerated >ago(24h)
 | where OperationNameValue=~"MICROSOFT.RESOURCES/DEPLOYMENTS/WRITE"
 | where ActivityStatusValue=="Success"
 | extend BatchAccountName=Properties_d.resource
@@ -26,7 +28,7 @@ AzureActivity
 ```
 //Pool Creation
 AzureActivity
-| where TimeGenerated >ago(90d)
+| where TimeGenerated >ago(24h)
 | where OperationNameValue=~"MICROSOFT.BATCH/BATCHACCOUNTS/POOLS/WRITE"
 | where ActivityStatusValue=="Success"
 | project TimeGenerated,OperationNameValue,ActivityStatusValue,ActivitySubstatusValue, BatchAccountName=Properties_d.resource,SubscriptionId=Properties_d.subscriptionId, ResourceGroup, Caller, CallerIpAddress,CorrelationId
