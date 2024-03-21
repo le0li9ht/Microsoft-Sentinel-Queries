@@ -59,7 +59,7 @@ sha256: 0216daee1c6690d2bb4be3bc7b8b2d585cb3dbc7c4bf4bbde03f4e8232fbcda7
 Threat Actor Handles:
 ```
 mail: m4xspo@gmail.com
-https://hub.docker.com/u/ubtssl
+https[:]//hub.docker.com/u/ubtssl
 hxxps[:]//github.com/max313iq
 hxxps[:]//github.com/ddao2604/
 ```
