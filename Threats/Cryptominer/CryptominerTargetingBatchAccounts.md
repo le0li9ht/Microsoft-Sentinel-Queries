@@ -37,13 +37,6 @@ Files:
 hxxps[:]//raw.githubusercontent.com/max313iq/Ssl/main/ba.sh
 hxxps[:]//raw.githubusercontent.com/max313iq/Ssl/main/ip
 ```
-Threat Actor Handles:
-```
-mail: m4xspo@gmail.com
-https://hub.docker.com/u/ubtssl
-hxxps[:]//github.com/max313iq
-hxxps[:]//github.com/ddao2604/
-```
 Malicious Docker Images:
 ```
 https://hub.docker.com/r/ubtssl/webappx
@@ -61,10 +54,18 @@ sha256: 01c6c81abf1206caf6c4004bae8c4999624228c8b1ce7514503e4150c10c21b5
 hxxps[:]//github.com/max313iq/Ssl/releases/download/Xxx/xmm
 sha256: 0216daee1c6690d2bb4be3bc7b8b2d585cb3dbc7c4bf4bbde03f4e8232fbcda7
 ```
+Threat Actor Handles:
+```
+mail: m4xspo@gmail.com
+https://hub.docker.com/u/ubtssl
+hxxps[:]//github.com/max313iq
+hxxps[:]//github.com/ddao2604/
+```
 ### Mitigations
 - Enforce MFA for all administrator accounts.
 - Implement Conditional Access Policies to disallow logins from other countries.
 - Monitor for any anomalies by creating [anomaly alerts](https://learn.microsoft.com/en-us/azure/cost-management-billing/understand/analyze-unexpected-charges)
 
 ### Reference:
-https://twitter.com/red_cth/status/1754970064560763199
+https://twitter.com/red_cth/status/1754970064560763199  
+https://dfir.ch/posts/azure_batch/
