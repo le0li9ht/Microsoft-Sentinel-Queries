@@ -3,7 +3,7 @@ Attackers are continuously devising new methods to mine cryptocurrencies. One su
 ### Attack Flow:
 - The attacker compromises any administrator account on Azure.
 - The attacker creates a resource group and a batch account within it.
-- The attacker creates a support ticket to increase the quota allocation for batch accounts.
+- The attacker creates a support ticket to increase the quota allocation for batch accounts(for boosting mining capacity).
 - Later, the attacker creates a pool inside the batch account with a start task.
 - The start task initiates the attack chain by downloading Docker and installing a malicious Docker image with a mining pool.
 - Cryptomining begins...
