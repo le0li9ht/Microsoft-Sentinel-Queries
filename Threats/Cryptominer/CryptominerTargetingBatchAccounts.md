@@ -68,6 +68,9 @@ hxxps[:]//github.com/ddao2604/
 - Implement Conditional Access Policies to disallow logins from other countries.
 - Monitor for any anomalies by creating [anomaly alerts](https://learn.microsoft.com/en-us/azure/cost-management-billing/understand/analyze-unexpected-charges)
 
+### Screenshots
+
+
 ### References:
 https://twitter.com/red_cth/status/1754970064560763199  
 https://dfir.ch/posts/azure_batch/
