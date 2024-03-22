@@ -69,7 +69,24 @@ hxxps[:]//github.com/ddao2604/
 - Monitor for any anomalies by creating [anomaly alerts](https://learn.microsoft.com/en-us/azure/cost-management-billing/understand/analyze-unexpected-charges)
 
 ### Screenshots
+Threat Actor Account on Docker Hub:   
 
+<img src="./Image.png">    
+Code Repo:  
+
+<img src="./CodeRepo.png">   
+
+Script that initiates attack chain:   
+  
+<img src="./Initiate.png">  
+
+Xmrig Binary:    
+
+<img src="./Binary.png">  
+
+Xmrig Binary:  
+
+<img src="./Binary1.png">  
 
 ### References:
 https://twitter.com/red_cth/status/1754970064560763199  
