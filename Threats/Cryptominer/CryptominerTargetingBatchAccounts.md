@@ -71,22 +71,22 @@ hxxps[:]//github.com/ddao2604/
 ### Screenshots
 Threat Actor Account on Docker Hub:   
 
-<img src="./Image.png">    
+<img src="./Images/Image.png">    
 Code Repo:  
 
-<img src="./CodeRepo.png">   
+<img src="./Images/CodeRepo.png">   
 
 Script that initiates attack chain:   
   
-<img src="./Initiate.png">  
+<img src="./Images/Initiate.png">  
 
 Xmrig Binary:    
 
-<img src="./Binary.png">  
+<img src="./Images/Binary.png">  
 
 Xmrig Binary:  
 
-<img src="./Binary1.png">  
+<img src="./Images/Binary1.png">  
 
 ### References:
 https://twitter.com/red_cth/status/1754970064560763199  
