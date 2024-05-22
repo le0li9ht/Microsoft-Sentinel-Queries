@@ -3,8 +3,8 @@ Attackers may disable storage account audit logs to prevent event tracking and a
 ### MITRE ATT&CK
 | Tactic | Technique | Link    |
 | ---  | --- | --- |
-| TA0005-Defense Evasion | MS-T810-Disable audit logs | https://attack.mitre.org/techniques/T1562/008/  
-|| T1562.008-Impair Defenses: Disable or Modify Cloud Logs| https://microsoft.github.io/Threat-matrix-for-storage-services/techniques/disable-audit-logs/|
+| TA0005-Defense Evasion | MS-T810-Disable audit logs |https://microsoft.github.io/Threat-matrix-for-storage-services/techniques/disable-audit-logs/|
+|| T1562.008-Impair Defenses: Disable or Modify Cloud Logs|https://attack.mitre.org/techniques/T1562/008/|  
 
 The below query detects deletion of azure diagnostic settings for disabling the logs.
 ```
