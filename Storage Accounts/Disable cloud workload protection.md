@@ -9,6 +9,7 @@ Microsoft Defender for Storage provides comprehensive security by analyzing the 
 | TA0005-Defense Evasion | MS-T811-Disable cloud workload protection | https://microsoft.github.io/Threat-matrix-for-storage-services/techniques/disable-protection-service/|
 | |T1562.001-Impair Defenses: Disable or Modify Tools | https://attack.mitre.org/techniques/T1562/001/ |
 
+### Query
 Removing Cloud Workload Protection for storage accounts generates several events. Among these, the EVENTSUBSCRIPTIONS/DELETE event is the most specific and relevant for constructing KQL queries. However, for full clarity, please also consider the other events occurring at the same time during your investigation.  
 
 - _MICROSOFT.SECURITY/PRICINGS/WRITE_
@@ -21,11 +22,9 @@ Removing Cloud Workload Protection for storage accounts generates several events
 
 The below query detects if defender for storage plan is disabled or removed  
 
-
 ```  
-
 AzureActivity
-| where OperationNameValue=="MICROSOFT.EVENTGRID/EVENTSUBSCRIPTIONS/DELETE"//
+| where OperationNameValue=="MICROSOFT.EVENTGRID/EVENTSUBSCRIPTIONS/DELETE"
 //Otherevents for correlation "MICROSOFT.EVENTGRID/SYSTEMTOPICS/DELETE","MICROSOFT.SECURITY/DATASCANNERS/DELETE"
 // Use the event MICROSOFT.SECURITY/PRICINGS/WRITE for the actual caller(Actor/Who) initiated the operation.
 | where ResourceProviderValue=="MICROSOFT.STORAGE"
@@ -35,10 +34,10 @@ AzureActivity
 | extend Role=Authorization_d.evidence.role
 | extend CloudWorkLoadProtection=array_split(split(Entity,'/',-1),-1)[1][0]
 | extend StorageAccount=trim_end(@"\/.*$",Resource)
+//| where CloudWorkLoadProtection=="StorageAntimalwareSubscription" // For more accurate threat detection
 | project TimeGenerated,OperationNameValue,CloudWorkLoadProtection, Caller, CallerIpAddress, ActivityStatusValue,StorageAccount,Resource, ResourceGroup, ResourceProviderValue, Entity, CorrelationId, Properties_d, Authorization_d
-
 ```
-**NOTE:** For pivoting the actual user(actor) who initiated this operation use the event MICROSOFT.SECURITY/PRICINGS/WRITE for the same event timeline.  
+**NOTE:** To pivot the actual user (actor) who initiated this operation, use the event MICROSOFT.SECURITY/PRICINGS/WRITE for the same event timeline.
 
 ```
 AzureActivity
@@ -46,7 +45,7 @@ AzureActivity
 | where OperationNameValue=="MICROSOFT.SECURITY/PRICINGS/WRITE"
 | where Properties_d.resource=="storageaccounts"
 ```
-
+### Background Research 
 ![](Images/CWP.png)  
 ![](Images/CWP1.png)
 
