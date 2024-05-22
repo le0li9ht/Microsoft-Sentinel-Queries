@@ -51,7 +51,8 @@ AzureActivity
 
 ```
 **Note:** Disabling _Audit_ or _All_ CategoryGroup alone does not disable the audit log events. Instead explicitly the attacker has to disable the _StorageRead_, _StorageWrite_ and _StorageDelete_ Category logs.  
-
-![](Images/LogBehaviour.png)
+ 
+![](Images/LogBehaviour1.png)  
+![](Images/LogBehaviour.png) 
 
 
