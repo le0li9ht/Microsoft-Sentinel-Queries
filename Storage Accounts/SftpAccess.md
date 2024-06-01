@@ -17,6 +17,16 @@ StorageBlobLogs
 | where StatusCode==200
 | project TimeGenerated, AccountName, Protocol, OperationName, AuthenticationType, StatusCode, StatusText, Uri, CallerIpAddress, UserAgentHeader, RequesterObjectId
 ```
+Failure attempts with wrong password  
+```
+StorageBlobLogs
+| where TimeGenerated >ago(90m)
+| where Protocol=="SFTP"
+| where OperationName=="SftpConnect"
+| where StatusCode==403
+| project TimeGenerated, AccountName, Protocol, OperationName, AuthenticationType, StatusCode, StatusText, Uri, CallerIpAddress, UserAgentHeader, RequesterObjectId
+
+```
 Access using localuserpassword  
 ```
 StorageBlobLogs  
