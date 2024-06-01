@@ -1,4 +1,4 @@
-## MITRE ATT&CK
+## Cloud storage security Threat Matrix
 Refer to the following links for detection queries related to Azure Storage Account threats:
 ### Initial Access
 - [MS-T825-SFTP credentials](https://github.com/le0li9ht/Microsoft-Sentinel-Queries/blob/main/Storage%20Accounts/SftpAccess.md)
