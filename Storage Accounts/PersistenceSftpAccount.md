@@ -1,3 +1,13 @@
+### SFTP account
+Attackers may create an SFTP account to maintain access to a target storage account. The SFTP account is local on the storage instance and is not subject to Azure RBAC permissions. The account is also unaffected in case of storage account access keys rotation.
+
+### MITRE ATT&CK
+| Tactic | Technique | Link    |
+| ---  | --- | --- |
+|MS-T809-Persistence|MS-T809-SFTP account|https://microsoft.github.io/Threat-matrix-for-storage-services/techniques/sftp-account/|  
+
+### Detection
+The below query helps you to detect if the sftp is enabled on the storage account.  
 
 ```
 AzureActivity
@@ -9,6 +19,7 @@ AzureActivity
 | where SftpEnabled==true
 | project TimeGenerated, OperationNameValue, ActivityStatusValue,StorageAccount, ResourceGroup,Caller,CallerIpAddress, SftpEnabled,LocalUserEnabled, Properties_d
 ```
+The below query helps you to detect if the local account was created(also password modification/creation changes) as part of sftp access.
 ```
 AzureActivity
 | where TimeGenerated >ago(40m)
