@@ -59,3 +59,8 @@ Listing directory creates following actions
 
 Change Directory    
 - SftpStat
+  
+Download File using get command generates following events.  
+- SftpOpen
+- SftpRead
+- SftpClose
