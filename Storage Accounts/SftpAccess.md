@@ -54,9 +54,7 @@ StorageBlobLogs
 #### Some common operationnames from the logs for associated sftp actions:
 
 
-Upload new files (put operation)
-Triggered when a blob is created or overwritten.
-Specifically, this event is triggered when clients use the put operation, which corresponds to the SftpCreate and SftpCommit APIs. An empty blob is created when the file is opened and the uploaded contents are committed when the file is closed. If the SFTP Resumable Uploads preview feature is enabled then some SftpWrite events will also be triggered during the upload.  
+Upload new files (put operation)  
 - SftpCreate
 - SftpWrite
 - SftpCommit
@@ -76,3 +74,7 @@ Download File using get command generates following events.
 - SftpOpen
 - SftpRead
 - SftpClose
+#### More info on put operation
+Triggered when a blob is created or overwritten.
+Specifically, this event is triggered when clients use the put operation, which corresponds to the SftpCreate and SftpCommit APIs. An empty blob is created when the file is opened and the uploaded contents are committed when the file is closed. If the SFTP Resumable Uploads preview feature is enabled then some SftpWrite events will also be triggered during the upload.  
+![](Images/more.png)  
