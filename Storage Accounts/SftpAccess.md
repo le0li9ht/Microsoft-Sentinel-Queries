@@ -38,9 +38,10 @@ StorageBlobLogs
 | where OperationName in ('SftpCreate','SftpWrite','SftpCommit')
 | project TimeGenerated, AccountName, Protocol, OperationName, AuthenticationType, StatusCode, StatusText, Uri, CallerIpAddress, UserAgentHeader, RequesterObjectId
 ```
+#### Notable Fields from logs
+![](Images/Sample_Logs.png)  
 
 #### Some common operationnames from the logs for associated sftp actions:
-![](Images/Sample_Logs.png)  
 
 
 Upload new files  
