@@ -78,4 +78,4 @@ Download File using get command generates following events.
 Triggered when a blob is created or overwritten.
 Specifically, this event is triggered when clients use the put operation, which corresponds to the SftpCreate and SftpCommit APIs. An empty blob is created when the file is opened and the uploaded contents are committed when the file is closed. If the SFTP Resumable Uploads preview feature is enabled then some SftpWrite events will also be triggered during the upload.  
 ![](Images/more.png)  
-![https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage?tabs=event-grid-event-schema#sftp-events](https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage?tabs=event-grid-event-schema#sftp-events)
+[https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage?tabs=event-grid-event-schema#sftp-events](https://learn.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage?tabs=event-grid-event-schema#sftp-events)
