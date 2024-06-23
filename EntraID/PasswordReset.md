@@ -12,3 +12,13 @@ AuditLogs
 | extend Initiatedby=InitiatedBy.user.userPrincipalName
 ```
 
+Password change during expired password time.
+```
+AuditLogs
+| where TimeGenerated >ago(4h)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Change password (self-service)"
+| extend TargetUser=TargetResources[0].userPrincipalName
+| extend Actor=InitiatedBy.user.userPrincipalName
+| project TimeGenerated, OperationName,ActivityDisplayName, Actor, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
+```
