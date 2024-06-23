@@ -40,3 +40,22 @@ AuditLogs
 | summarize TargetUsers=make_set(TargetUser),count() by Initiatedby
 | where array_length(TargetUsers)>2
 ```
+SSPR Reconnaisance
+//Examining SSPR initiations that were never completed from suspicious IPs can serve as an early warning of potential recon.
+//A burst of these activities for multiple accounts—especially high-value targets—reveals that your organization is likely being targeted and can serve as justification for the reconfiguration or disabling of SSPR.
+//If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.
+
+```
+AuditLogs
+| where TimeGenerated >ago(30m)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| where ResultDescription=="User was presented with verification options"
+//where ResultDescription=="User cancelled before passing the required authentication methods" //optional also attacker can close browser tab instead of cancelling it. So not accurate but a worthwhile option.
+| join kind=leftanti (
+AuditLogs
+| where TimeGenerated >ago(30m)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| where ResultDescription has_any ("User started the","verification option")) on CorrelationId
+```
