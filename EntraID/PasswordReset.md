@@ -40,6 +40,16 @@ AuditLogs
 | summarize TargetUsers=make_set(TargetUser),count() by Initiatedby
 | where array_length(TargetUsers)>2
 ```
+User accounts that has not registered sspr and failed for SSPR
+```
+AuditLogs
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IpAddress=tostring(InitiatedBy.user.ipAddress)
+| where ResultReason=="User's account has insufficient authentication methods defined. Add authentication info to resolve this "
+| project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress,ResultDescription, AdditionalDetails,Result, CorrelationId
+```
+
 #### SSPR Reconnaisance
 Examining SSPR initiations that were never completed from suspicious IPs can serve as an early warning of potential recon. A burst of these activities for multiple accounts—especially high-value targets—reveals that your organization is likely being targeted and can serve as justification for the reconfiguration or disabling of SSPR. If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.  
 
