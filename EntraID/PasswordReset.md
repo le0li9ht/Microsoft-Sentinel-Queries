@@ -26,6 +26,27 @@ AuditLogs
 | extend IpAddress=tostring(InitiatedBy.user.ipAddress)
 | project TimeGenerated, OperationName,ActivityDisplayName, Actor,IpAddress, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
 ```
+SSPR successful Method1
+```
+AuditLogs
+| where TimeGenerated >ago(90d)
+//| where LoggedByService=="Self-service Password Management"
+| where OperationName contains "Reset password (self-service)"
+| where ResultDescription=="Successfully completed reset."
+| where Result=="success"
+| extend User=InitiatedBy.user.userPrincipalName
+```
+SSPR Successful Method 2
+```
+AuditLogs
+| where TimeGenerated >ago(90d)
+//| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| where ResultDescription=="User successfully reset password"
+| where Result=="success"
+| extend User=InitiatedBy.user.userPrincipalName
+```
+
 Find multiple password reset by admin
 ```
 AuditLogs
