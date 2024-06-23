@@ -1,6 +1,7 @@
 SSPR
 ### Password Reset by admin
 KQL Query for finding password reset operations performed by admins on behalf of a user
+
 ```
 AuditLogs
 | where TimeGenerated >ago(90d)
@@ -10,3 +11,4 @@ AuditLogs
 | extend TargetUser = tostring(TargetResources[0].userPrincipalName)
 | extend Initiatedby=InitiatedBy.user.userPrincipalName
 ```
+
