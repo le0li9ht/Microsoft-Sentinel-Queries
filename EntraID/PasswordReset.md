@@ -10,6 +10,8 @@ AuditLogs
 | where Result == "success"
 | extend TargetUser = tostring(TargetResources[0].userPrincipalName)
 | extend Initiatedby=InitiatedBy.user.userPrincipalName
+| extend IpAddress=tostring(InitiatedBy.user.ipAddress)
+| project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
 
 Password change during expired password time.
@@ -20,5 +22,6 @@ AuditLogs
 | where OperationName=="Change password (self-service)"
 | extend TargetUser=TargetResources[0].userPrincipalName
 | extend Actor=InitiatedBy.user.userPrincipalName
-| project TimeGenerated, OperationName,ActivityDisplayName, Actor, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
+| extend IpAddress=tostring(InitiatedBy.user.ipAddress)
+| project TimeGenerated, OperationName,ActivityDisplayName, Actor,IpAddress, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
 ```
