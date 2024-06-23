@@ -1,4 +1,4 @@
-SSPR
+## Microsoft Entra self-service password reset
 ### Password Reset by admin
 KQL Query for finding password reset operations performed by admins on behalf of a user
 
@@ -14,6 +14,22 @@ AuditLogs
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
 
+Find multiple password reset by admin
+```
+AuditLogs
+| where TimeGenerated >ago(1d)
+//| where LoggedByService=~"Self-service Password Management"
+| where OperationName == "Reset password (by admin)"
+| where Result == "success"
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IpAddress=tostring(InitiatedBy.user.ipAddress)
+| project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
+| summarize TargetUsers=make_set(TargetUser),count() by Initiatedby
+| where array_length(TargetUsers)>2
+```
+
+### Voluntary, or forced (due to expiry) password change.
 Password change during expired password time.
 ```
 AuditLogs
@@ -26,6 +42,7 @@ AuditLogs
 | extend IpAddress=tostring(InitiatedBy.user.ipAddress)
 | project TimeGenerated, OperationName,ActivityDisplayName, Actor,IpAddress, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
 ```
+### Reset Password Via Entra Reset Password Service
 SSPR successful Method1
 ```
 AuditLogs
@@ -63,22 +80,6 @@ AuditLogs
 
 ```
 
-
-
-Find multiple password reset by admin
-```
-AuditLogs
-| where TimeGenerated >ago(1d)
-//| where LoggedByService=~"Self-service Password Management"
-| where OperationName == "Reset password (by admin)"
-| where Result == "success"
-| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
-| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
-| extend IpAddress=tostring(InitiatedBy.user.ipAddress)
-| project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
-| summarize TargetUsers=make_set(TargetUser),count() by Initiatedby
-| where array_length(TargetUsers)>2
-```
 User accounts that has not registered sspr and failed for SSPR
 ```
 AuditLogs
@@ -112,5 +113,3 @@ AuditLogs
 ```
 ### References  
 https://cloudsecurityalliance.org/blog/2023/08/09/behind-the-breach-self-service-password-reset-sspr-abuse-in-azure-ad
-
-?
