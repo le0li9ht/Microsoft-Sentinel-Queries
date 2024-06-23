@@ -20,6 +20,7 @@ AuditLogs
 | where TimeGenerated >ago(4h)
 | where LoggedByService=="Self-service Password Management"
 | where OperationName=="Change password (self-service)"
+| where Result == "success"
 | extend TargetUser=TargetResources[0].userPrincipalName
 | extend Actor=InitiatedBy.user.userPrincipalName
 | extend IpAddress=tostring(InitiatedBy.user.ipAddress)
