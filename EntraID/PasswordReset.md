@@ -46,6 +46,24 @@ AuditLogs
 | where Result=="success"
 | extend User=InitiatedBy.user.userPrincipalName
 ```
+Multiple User Password Reset From Single IP
+```
+AuditLogs
+| where TimeGenerated >ago(1d)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Reset password (self-service)"
+| where ResultDescription=="Successfully completed reset."
+| where Result=="success"
+| extend TargetUser=TargetResources[0].userPrincipalName
+| extend Actor=InitiatedBy.user.userPrincipalName
+| extend IpAddress=tostring(InitiatedBy.user.ipAddress)
+| extend User=InitiatedBy.user.userPrincipalName
+| summarize min(TimeGenerated),max(TimeGenerated),Useset=make_set(Actor), count() by IpAddress
+| where array_length(Useset)>1
+
+```
+
+
 
 Find multiple password reset by admin
 ```
