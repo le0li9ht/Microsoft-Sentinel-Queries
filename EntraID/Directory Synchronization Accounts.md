@@ -16,6 +16,12 @@ AuditLogs
 | where RoleAssigned=~'"Directory Synchronization Accounts"'
 | project TimeGenerated,AADOperationType,OperationName, InitiatedUser, InitiatedVia,ipAddress, TargetPrincipalName, RoleAssigned, RoleObjectID, RoleObjectName, ['User-Agent']
 ```
+Another query to look for the role assignment.
+```
+IdentityInfo
+| where TimeGenerated > ago(1d)
+| where AssignedRoles contains "Directory Synchronization Accounts"
+```
 
 Removed The Role
 ```
