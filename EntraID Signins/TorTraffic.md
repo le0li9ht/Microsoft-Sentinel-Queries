@@ -1,4 +1,4 @@
-KQL query for finding signin events from TOR exit nodes.
+Locate sign-in events coming from TOR exit node IP addresses.  
 ```
 let TorExitNodes=externaldata(ipAddress:string)[
 "https://check.torproject.org/torbulkexitlist"];
