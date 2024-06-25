@@ -84,7 +84,7 @@ AuditLogs
 
 ```
 
-User accounts that has not registered sspr and failed for SSPR
+#### User accounts that has not registered sspr and failed for SSPR
 ```
 AuditLogs
 | extend TargetUser = tostring(TargetResources[0].userPrincipalName)
