@@ -14,7 +14,7 @@ AuditLogs
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
 
-Find multiple password reset by admin
+#### Find multiple password reset by admin
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
@@ -43,7 +43,7 @@ AuditLogs
 | project TimeGenerated, OperationName,ActivityDisplayName, Actor,IpAddress, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
 ```
 ### Reset Password Via Entra Reset Password Service
-SSPR successful Method1
+Successful password reset via SSPR method from Entra Reset Password Service.
 ```
 AuditLogs
 | where TimeGenerated >ago(90d)
@@ -52,9 +52,9 @@ AuditLogs
 | where ResultDescription=="Successfully completed reset."
 | where Result=="success"
 | extend User=InitiatedBy.user.userPrincipalName
-```
-SSPR Successful Method 2
-```
+
+                        (Or)
+
 AuditLogs
 | where TimeGenerated >ago(90d)
 //| where LoggedByService=="Self-service Password Management"
@@ -63,7 +63,11 @@ AuditLogs
 | where Result=="success"
 | extend User=InitiatedBy.user.userPrincipalName
 ```
-Multiple User Password Reset From Single IP
+#### Multiple user password resets via SSPR performed from a single IP address.
+Expected FPs:  
+* Users are within the same subnet, such as within a company network sharing a common public IP.  
+* A DevOps or developer may be changing passwords for both test accounts and their own account simultaneously.
+
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
