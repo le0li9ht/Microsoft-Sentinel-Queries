@@ -208,3 +208,4 @@ AuditLogs
 
 ### References  
 https://cloudsecurityalliance.org/blog/2023/08/09/behind-the-breach-self-service-password-reset-sspr-abuse-in-azure-ad
+https://support.microsoft.com/en-us/account-billing/reset-your-work-or-school-password-using-security-info-23dde81f-08bb-4776-ba72-e6b72b9dda9e
