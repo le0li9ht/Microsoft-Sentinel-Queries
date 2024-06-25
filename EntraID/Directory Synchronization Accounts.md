@@ -23,6 +23,7 @@ IdentityInfo
 | where AssignedRoles contains "Directory Synchronization Accounts"
 ```
 
+
 Removed The Role
 ```
 AuditLogs
@@ -40,4 +41,12 @@ AuditLogs
 | extend TargetPrincipalName=tostring(TargetResources.userPrincipalName)
 | where RoleAssigned=~'"Directory Synchronization Accounts"'
 | project TimeGenerated,AADOperationType,OperationName, InitiatedUser, InitiatedVia,ipAddress, TargetPrincipalName, RoleAssigned, RoleObjectID, RoleObjectName, ['User-Agent']
+```
+//Added Query
+```
+MicrosoftGraphActivityLogs
+| where TimeGenerated >ago(20d)
+| where RequestUri contains "https://graph.microsoft.com/v1.0/roleManagement/directory/roleAssignments"
+| where RequestMethod=="POST"
+| where ResponseStatusCode==201
 ```
