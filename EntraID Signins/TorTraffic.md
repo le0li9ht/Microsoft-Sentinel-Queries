@@ -8,7 +8,7 @@ SigninLogs
 | project TimeGenerated, UserPrincipalName, IPAddress, Location, ResultType, ResultDescription,AppDisplayName, ResourceDisplayName,UserAgent,RiskEventTypes_V2, AuthenticationRequirement, AuthenticationProtocol, DeviceDetail
 ```
 
-Not accurate query but can be used.
+For TOR traffic, the "anonymizedIPAddress" value may appear in the RiskEventTypes_V2 property, though its presence is not guaranteed.  
 ```
 SigninLogs
 | where TimeGenerated >ago(90d)
