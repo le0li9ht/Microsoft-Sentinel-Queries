@@ -90,8 +90,10 @@ AuditLogs
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress,ResultDescription, AdditionalDetails,Result, CorrelationId
 ```
 
-#### SSPR Reconnaisance
-Examining SSPR initiations that were never completed from suspicious IPs can serve as an early warning of potential recon. A burst of these activities for multiple accounts—especially high-value targets—reveals that your organization is likely being targeted and can serve as justification for the reconfiguration or disabling of SSPR. If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.  
+### SSPR Reconnaisance
+Examining SSPR initiations that were never completed from suspicious IPs can serve as an early warning of potential recon. A burst of these activities for multiple accounts—especially high-value targets—reveals that your organization is likely being targeted and can serve as justification for the reconfiguration or disabling of SSPR.
+
+KQL Query for identifying SSPR reconnaisance  
 
 ```
 AuditLogs
@@ -111,7 +113,12 @@ AuditLogs
 | where ResultDescription has_any ("User started the","verification option")) on CorrelationId
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
-If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.   
+
+
+### Successfull Password Reset Via SIM Swapping
+If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.
+
+Query for detecting SSPR flows completed via SMS or phone call options from rare IP.  
 ```
 AuditLogs
 | where TimeGenerated >ago(90d)
@@ -145,8 +152,10 @@ SigninLogs
 | where ResultType == 0 ) 
 on IPAddress
 ```
-
+Query for detecting SSPR flows completed via SMS or phone call options from TOR IP.  
 ```
+let TorExitNodes=externaldata(ipAddress:string)[
+"https://check.torproject.org/torbulkexitlist"];
 AuditLogs
 | where TimeGenerated >ago(90d)
 | where LoggedByService=="Self-service Password Management"
@@ -154,6 +163,7 @@ AuditLogs
 | extend TargetUser = tostring(TargetResources[0].userPrincipalName)
 | extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
 | extend IPAddress=tostring(InitiatedBy.user.ipAddress)
+| where IPAddress in (TorExitNodes)
 //Only Verifications should present 
 // User started the mobile SMS verification option
 // User completed the mobile SMS verification option
@@ -173,6 +183,27 @@ AuditLogs
 // User started the mobile app code verification option
 // User started the mobile app notification verification option
 | where not(SSPRFlowEvents has_any ("mobile app notification","mobile app code verification","email verification option","security questions verification option"))
+```
+### Successful Password Reset From TOR IPs
+Successful password reset from TOR IPs using any methods.
+```
+let TorExitNodes=externaldata(ipAddress:string)[
+"https://check.torproject.org/torbulkexitlist"];
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IPAddress=tostring(InitiatedBy.user.ipAddress)
+| where IPAddress in (TorExitNodes)
+//Only Verifications should present 
+// User started the mobile SMS verification option
+// User completed the mobile SMS verification option
+// User completed the mobile voice call verification option
+// User started the mobile voice call verification option
+| summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
+| where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
 ```
 
 ### References  
