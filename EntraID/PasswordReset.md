@@ -111,5 +111,7 @@ AuditLogs
 | where ResultDescription has_any ("User started the","verification option")) on CorrelationId
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
+
+If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.  
 ### References  
 https://cloudsecurityalliance.org/blog/2023/08/09/behind-the-breach-self-service-password-reset-sspr-abuse-in-azure-ad
