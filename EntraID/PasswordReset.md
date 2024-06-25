@@ -111,7 +111,69 @@ AuditLogs
 | where ResultDescription has_any ("User started the","verification option")) on CorrelationId
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
+If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.   
+```
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IPAddress=tostring(InitiatedBy.user.ipAddress)
+//Only Verifications should present 
+// User started the mobile SMS verification option
+// User completed the mobile SMS verification option
+// User completed the mobile voice call verification option
+// User started the mobile voice call verification option
+| summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
+| where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
+//Security Questions
+// User started the security questions verification option
+// User completed the security questions verification option
+//Email-Verification
+// User started the email verification option
+// User completed the email verification option
+//Authenticator App
+// User started the mobile app notification verification option
+// User completed the mobile app notification verification option
+// User started the mobile app code verification option
+// User started the mobile app notification verification option
+| where not(SSPRFlowEvents has_any ("mobile app notification","mobile app code verification","email verification option","security questions verification option"))
+| join kind=leftanti (
+SigninLogs
+| where TimeGenerated > ago(90d)
+| where ResultType == 0 ) 
+on IPAddress
+```
 
-If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.  
+```
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IPAddress=tostring(InitiatedBy.user.ipAddress)
+//Only Verifications should present 
+// User started the mobile SMS verification option
+// User completed the mobile SMS verification option
+// User completed the mobile voice call verification option
+// User started the mobile voice call verification option
+| summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
+| where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
+//Security Questions
+// User started the security questions verification option
+// User completed the security questions verification option
+//Email-Verification
+// User started the email verification option
+// User completed the email verification option
+//Authenticator App
+// User started the mobile app notification verification option
+// User completed the mobile app notification verification option
+// User started the mobile app code verification option
+// User started the mobile app notification verification option
+| where not(SSPRFlowEvents has_any ("mobile app notification","mobile app code verification","email verification option","security questions verification option"))
+```
+
 ### References  
 https://cloudsecurityalliance.org/blog/2023/08/09/behind-the-breach-self-service-password-reset-sspr-abuse-in-azure-ad
