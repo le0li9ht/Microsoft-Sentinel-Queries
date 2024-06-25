@@ -19,7 +19,7 @@ AuditLogs
 Another query to look for the role assignment.
 ```
 IdentityInfo
-| where TimeGenerated > ago(1d)
+| where TimeGenerated > ago(14d)
 | where AssignedRoles contains "Directory Synchronization Accounts"
 ```
 
