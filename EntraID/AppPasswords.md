@@ -1,6 +1,10 @@
-Some older, non-browser apps like Office 2010 or earlier and Apple Mail before iOS 11 don't understand pauses or breaks in the authentication process. A Microsoft Entra multifactor authentication (Microsoft Entra multifactor authentication) user who attempts to sign in to one of these older, non-browser apps, can't successfully authenticate. To use these applications in a secure way with Microsoft Entra multifactor authentication enforced for user accounts, you can use app passwords. These app passwords replaced your traditional password to allow an app to bypass multifactor authentication and work correctly.
+Some older, non-browser apps like Office 2010 or earlier and Apple Mail before iOS 11 don't understand pauses or breaks in the authentication process. A Microsoft Entra multifactor authentication (Microsoft Entra multifactor authentication) user who attempts to sign in to one of these older, non-browser apps, can't successfully authenticate. To use these applications in a secure way with Microsoft Entra multifactor authentication enforced for user accounts, you can use app passwords. These app passwords replaced your traditional password to allow an app to bypass multifactor authentication and work correctly.  
 
-This KQL Query checks if the 
+
+![alt text](https://github.com/le0li9ht/Microsoft-Sentinel-Queries/blob/main/EntraID/Images/AppPasswords.png)    
+  
+This KQL Query checks if the App Passwords setting is enabled.
+
 ```
 AuditLogs
 | where TimeGenerated >ago(20m)
