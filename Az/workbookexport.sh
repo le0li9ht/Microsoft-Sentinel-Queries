@@ -12,11 +12,12 @@ download_workbook_gallery_content() {
         "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Insights/workbooks/$workbookId?api-version=$apiVersion&canFetchContent=$canFetchContent" | jq -r)
     #fetch workbookname from output
     workbookname=$(echo "$response" | jq -r ".properties.displayName")
+    echo "Exporting $workbookname ......"
     #export each workbook content to .json files
     echo "$response" | jq -r ".properties.serializedData" | jq -r >"${workbookname}.json"
 }
 
 # Get workbook Ids and process each
 az resource list --resource-group "$resourceGroupName" --resource-type "microsoft.insights/workbooks" --query "[].name" --output tsv | while IFS= read -r workbookId; do
-    download_workbook_gallery_content "$workbookId
+    download_workbook_gallery_content "$workbookId"
 done
