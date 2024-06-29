@@ -9,7 +9,7 @@ download_workbook_gallery_content() {
     local workbookId="$1"
     # Fetch workbook content
     local response=$(az rest --method get --url \
-        "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Insights/workbooks/$workbookId?api-version=$apiVersion&canFetchContent=$canFetchContent" | jq -r)
+        "https://management.azure.com/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.Insights/workbooks/$workbookId?api-version=$apiVersion&canFetchContent=$canFetchContent")
     #fetch workbookname from output
     workbookname=$(echo "$response" | jq -r ".properties.displayName")
     echo "Exporting $workbookname ......"
