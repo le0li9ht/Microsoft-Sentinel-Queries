@@ -34,6 +34,12 @@ You can also detect via powershell commands.
 ![](Images/DetectUnifiedAuditLogDisabled.png)
 
 ## Disable Admin Audit Logs  
+### Emulation
+```
+Get-AdminAuditLogConfig | Format-List AdminAuditLogEnabled
+Set-AdminAuditLogConfig -AdminAuditLogEnabled $False
+```
+### Detection: 
 The below KQL query detects disabling of Admin Audit Logs.  
 ```
 OfficeActivity
