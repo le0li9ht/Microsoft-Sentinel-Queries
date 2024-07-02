@@ -13,6 +13,9 @@ OfficeActivity
 | project TimeGenerated,ElevationTime, UserType,Operation,ResultStatus, OfficeObjectId, UserId, ClientIP, ExternalAccess, AppName, OrganizationName
 ```
 Disabling Unified Audit Logs generates an Incident in Microsoft Defender XDR(Microsoft 365 Defender) as shown.
+* **Incident Name**: Unified audit log ingestion was turned off involving one user
+* **AlertName**: Unified audit log ingestion was turned off
+
 ![Defender Alert](Images/UnifiedAuditLogDisabled.png)
 The below KQL query detects disabling of Admin Audit Logs.  
 ```
