@@ -1,6 +1,10 @@
-MITRE Technique
+### MITRE Technique
 - [T1562.008: Disable Cloud Logs](https://attack.mitre.org/techniques/T1562/008/)  
 
+#### Emulation:  
+```Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $false```
+
+#### Detection:
 The below KQL query detects disabling of Unified Audit Logs.  
 ```
 OfficeActivity
