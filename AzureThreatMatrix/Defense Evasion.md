@@ -58,6 +58,7 @@ OfficeActivity
 Get-OrganizationConfig | Format-List AuditDisabled
 #Get to know the mailbox auditing enabled or disabled for a user.
 Get-MailboxAuditBypassAssociation -Identity <UserEmail> | select AuditBypassEnabled
+Get-Mailbox -Identity <UserMail> | select AuditEnabled                 
 #Bypass mailbox auditing for a user
 Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true
 #Bypass Detection query using -Confirm parameter
