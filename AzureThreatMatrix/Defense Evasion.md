@@ -80,7 +80,7 @@ OfficeActivity
 The below query detects the attempts to disable to mailbox auditing via Set-Mailbox command.  
 ```
 OfficeActivity
-| where TimeGenerated >ago(1d)
+| where TimeGenerated >ago(1h)
 | where Operation=="Set-Mailbox"
 | extend parsedParam=parse_json(Parameters) 
 | extend AppName=iff(AppId=="fb78d390-0c51-40cd-8e17-fdbfab77341b","Microsoft Exchange REST API Based Powershell",'')
@@ -91,7 +91,7 @@ OfficeActivity
 | project TimeGenerated,RecordType,UserType,ClientIP, UserId,AuditingEnabled,Operation,SourceRecordId,ResultStatus, Parameters,ExternalAccess, AppId, AppName
 | join kind=inner(
 OfficeActivity
-| where TimeGenerated >ago(1d)
+| where TimeGenerated >ago(1h)
 | where Operation=="Set-Mailbox"
 | extend parsedParam=parse_json(Parameters) 
 | mv-expand parsedParam
