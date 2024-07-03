@@ -51,3 +51,28 @@ OfficeActivity
 | extend AppName=iff(AppId=="fb78d390-0c51-40cd-8e17-fdbfab77341b","Microsoft Exchange REST API Based Powershell",AppId)
 | project TimeGenerated,ElevationTime, UserType,Operation,ResultStatus, OfficeObjectId, UserId, ClientIP, ExternalAccess, AppName, OrganizationName
 ```
+## Disable Mailbox Auditing
+### Emulation
+```
+# Get to know the mailbox auditing enabled for the organization
+Get-OrganizationConfig | Format-List AuditDisabled
+#Get to know the mailbox auditing enabled or disabled for a user.
+Get-MailboxAuditBypassAssociation -Identity <UserEmail> | select AuditBypassEnabled
+#Bypass mailbox auditing for a user
+Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true
+#Bypass Detection query using -Confirm parameter
+Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true -Confirm:$true 
+Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true -Confirm:$false
+```
+### Detection
+The following query detects mailbox auditing bypass attempts. This detection also identifies attempts to bypass detection by appending the Confirm parameter.
+```
+OfficeActivity
+| where TimeGenerated >ago(1h)
+| where Operation == "Set-MailboxAuditBypassAssociation"
+| extend AuditBypassEnabled=iff(parse_json(Parameters)[0].Name=="AuditBypassEnabled",parse_json(Parameters)[0].Value,iff(parse_json(Parameters)[1].Name=="AuditBypassEnabled",parse_json(Parameters)[1].Value,''))
+| where AuditBypassEnabled=="True"
+| extend TargetUser=iff(parse_json(Parameters)[1].Name=="Identity",parse_json(Parameters)[1].Value,iff(parse_json(Parameters)[2].Name=="Identity",parse_json(Parameters)[2].Value,''))
+| where ResultStatus=="True"
+| project TimeGenerated, Operation, UserId, TargetUser,  AuditBypassEnabled, ClientIP, UserType, RecordType,ResultStatus,ExternalAccess, Parameters
+```
