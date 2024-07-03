@@ -66,7 +66,7 @@ Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $tru
 Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true -Confirm:$false
 ```
 ### Detection
-The following query detects mailbox auditing bypass attempts. This detection also identifies attempts to bypass detection by appending the Confirm parameter.
+The following query detects _mailbox auditing bypass_. This detection also identifies attempts to bypass detection by appending the Confirm parameter.
 ```
 OfficeActivity
 | where TimeGenerated >ago(1h)
