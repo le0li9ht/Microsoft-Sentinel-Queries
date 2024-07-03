@@ -71,12 +71,12 @@ AuditLogs
 | extend NewDisabledPlan=AssignedLicenseNewValue.DisabledPlans
 | extend OldDisabledPlanGUID=AssignedLicenseDetailsOldValue.DisabledPlans
 | extend NewDisabledPlanGUID=AssignedLicenseDetailsNewValue.DisabledPlans
-| where OldSkuName==NewSkuName //and Oldskuid==NewSkuid  // both the SKU names should be same. Then only we can calculate what has changed from old and new for each SKU license.
+| where OldSkuName==NewSkuName and Oldskuid==NewSkuid  // both the SKU names should be same. Then only we can calculate what has changed from old and new for each SKU license.
 | extend ['Disabled Service Plan']=iff(isnotempty(OldDisabledPlan[0]),set_difference(NewDisabledPlan,OldDisabledPlan),NewDisabledPlan)
 | extend ['Disabled Service Plan GUID']=iff(isnotempty(OldDisabledPlanGUID[0]), set_difference(NewDisabledPlanGUID,OldDisabledPlanGUID),NewDisabledPlanGUID)
 | where array_length(['Disabled Service Plan'])!=0 // Do not show any empty values. This can occur if there are any errors.
 | where ['Disabled Service Plan'] has "M365_ADVANCED_AUDITING" or ['Disabled Service Plan GUID'] has "2f442157-a11c-46b9-ae5b-6e39ff4e5849"
-| project TimeGenerated,OperationName, InitiatedUser, InitiatedVia, ipAddress,TargetUser,['Disabled Service Plan'],['Disabled Service Plan GUID'],AssignedLicense, LicenceUpdateProperties, OldSkuName, NewSkuName, OldDisabledPlan, NewDisabledPlan,OldDisabledPlanGUID,NewDisabledPlanGUID, InitiatedApp, InitiatedPrincipalId
+| project TimeGenerated,OperationName, InitiatedUser, InitiatedVia, ipAddress,TargetUser,['Disabled Service Plan'],['Disabled Service Plan GUID'],AssignedLicense,  InitiatedApp, InitiatedPrincipalId,LicenceUpdateProperties, OldSkuName, NewSkuName, OldDisabledPlan, NewDisabledPlan,OldDisabledPlanGUID,NewDisabledPlanGUID
 ```
 ## Disable Admin Audit Logs  
 ### Emulation
