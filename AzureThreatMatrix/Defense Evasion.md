@@ -33,6 +33,50 @@ You can also detect via powershell commands.
 ```Search-AdminAuditLog -Cmdlets Set-AdminAuditLogConfig -Parameters UnifiedAuditLogIngestionEnabled```  
 ![](Images/DetectUnifiedAuditLogDisabled.png)
 
+#### Disable Audit Log Via Disabling License.
+```
+//Find disabled license plans
+AuditLogs
+| where TimeGenerated > ago(20m)
+| where OperationName == "Change user license"
+| mv-expand TargetResources
+| extend InitiatedApp=tostring(InitiatedBy.app.displayName)
+| extend InitiatedPrincipalId=tostring(InitiatedBy.app.servicePrincipalId)
+| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
+| extend TargetUser=tostring(TargetResources.userPrincipalName)
+| extend ipAddress=tostring(InitiatedBy.user.ipAddress)
+| extend value=parse_json(AdditionalDetails[2].value)
+| extend AppDisplayName=tostring(InitiatedBy.user.displayName)
+| extend sequence=toint(AdditionalDetails[1].value)
+| extend maximumlength=toint(AdditionalDetails[3].value)
+| sort by sequence asc 
+| summarize TimeGenerated=min(TimeGenerated),OperationName=make_set(OperationName)[0],InitiatedVia=make_list(AppDisplayName)[0],InitiatedUser=make_list(InitiatedBy.user.userPrincipalName)[0], TargetUser=make_list(TargetUser)[0], ipAddress=make_list(ipAddress)[0],InitiatedApp=make_list(InitiatedApp)[0],InitiatedPrincipalId=make_list(InitiatedPrincipalId)[0],LicenceUpdateProperties=strcat_array(make_list(value), '') by CorrelationId // strcat_array function combines the divided modified properties into one proper json value.
+| extend AssignedLicense=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0]
+| extend AssignedLicenseNewValue=array_sort_asc(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0].NewValue)
+| extend AssignedLicenseOldValue=array_sort_asc(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0].OldValue)
+| extend AssignedLicenseDetails=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2]
+| extend AssignedLicenseDetailsNewValue=array_sort_asc(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].NewValue)
+| extend AssignedLicenseDetailsOldValue=array_sort_asc(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].OldValue)
+| mv-expand AssignedLicenseNewValue, AssignedLicenseDetailsNewValue,AssignedLicenseDetailsOldValue, AssignedLicenseOldValue
+//convert the string data to proper dictionary
+| extend AssignedLicenseNewValue=iff(isnotempty(AssignedLicenseNewValue),parse_json(strcat('{"',substring(replace_string(replace_string(replace_string(replace_string(replace_string(tostring(parse_json(AssignedLicenseNewValue)),'=[','":["'),"=",'":"'),",",'","'),"]]",'"]}'),'" ','"'),1))),parse_json(''))
+| extend AssignedLicenseOldValue=iff(isnotempty(AssignedLicenseOldValue),parse_json(strcat('{"',substring(replace_string(replace_string(replace_string(replace_string(replace_string(tostring(parse_json(AssignedLicenseOldValue)),'=[','":["'),"=",'":"'),",",'","'),"]]",'"]}'),'" ','"'),1))),parse_json(''))
+| where isnotempty(parse_json(AssignedLicenseNewValue).DisabledPlans[0])  //exclude records that does not have any disabled plans
+| extend OldSkuName=tostring(AssignedLicenseOldValue.SkuName)
+| extend NewSkuName=tostring(AssignedLicenseNewValue.SkuName)
+| extend Oldskuid=tostring(AssignedLicenseDetailsOldValue.SkuId)
+| extend NewSkuid=tostring(AssignedLicenseDetailsNewValue.SkuId)
+| extend OldDisabledPlan=AssignedLicenseOldValue.DisabledPlans
+| extend NewDisabledPlan=AssignedLicenseNewValue.DisabledPlans
+| extend OldDisabledPlanGUID=AssignedLicenseDetailsOldValue.DisabledPlans
+| extend NewDisabledPlanGUID=AssignedLicenseDetailsNewValue.DisabledPlans
+| where OldSkuName==NewSkuName   // both the SKU names should be same. Then only we can calculate what has changed from old and new for each SKU license.
+| extend ['Disabled Service Plan']=iff(isnotempty(OldDisabledPlan[0]),set_difference(NewDisabledPlan,OldDisabledPlan),NewDisabledPlan)
+| extend ['Disabled Service Plan GUID']=iff(isnotempty(OldDisabledPlanGUID[0]), set_difference(NewDisabledPlanGUID,OldDisabledPlanGUID),NewDisabledPlanGUID)
+| where array_length(['Disabled Service Plan'])!=0 // Do not show any empty values. This can occur if there are any errors.
+| project TimeGenerated,OperationName, InitiatedUser, InitiatedVia, ipAddress,TargetUser,['Disabled Service Plan'],['Disabled Service Plan GUID'],AssignedLicense, LicenceUpdateProperties, OldSkuName, NewSkuName, OldDisabledPlan, NewDisabledPlan, InitiatedApp, InitiatedPrincipalId
+```
+
 ## Disable Admin Audit Logs  
 ### Emulation
 ```
