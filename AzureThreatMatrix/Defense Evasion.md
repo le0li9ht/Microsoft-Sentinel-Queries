@@ -77,3 +77,26 @@ OfficeActivity
 | where ResultStatus=="True"
 | project TimeGenerated, Operation, UserId, TargetUser,  AuditBypassEnabled, ClientIP, UserType, RecordType,ResultStatus,ExternalAccess, Parameters
 ```
+The below query detects the attempts to disable to mailbox auditing via Set-Mailbox command.  
+```
+OfficeActivity
+| where TimeGenerated >ago(1d)
+| where Operation=="Set-Mailbox"
+| extend parsedParam=parse_json(Parameters) 
+| extend AppName=iff(AppId=="fb78d390-0c51-40cd-8e17-fdbfab77341b","Microsoft Exchange REST API Based Powershell",'')
+| mv-expand parsedParam
+| extend AuditingEnabled=iff(parse_json(parsedParam).Name=="AuditEnabled",parse_json(parsedParam).Value,'')
+| where AuditingEnabled=="False"
+| where ResultStatus=="True"
+| project TimeGenerated,RecordType,UserType,ClientIP, UserId,AuditingEnabled,Operation,SourceRecordId,ResultStatus, Parameters,ExternalAccess, AppId, AppName
+| join kind=inner(
+OfficeActivity
+| where TimeGenerated >ago(1d)
+| where Operation=="Set-Mailbox"
+| extend parsedParam=parse_json(Parameters) 
+| mv-expand parsedParam
+| extend TargetUser=iff(parse_json(parsedParam).Name=="Identity",parse_json(parsedParam).Value,'')
+| where isnotempty(TargetUser)
+| project TimeGenerated,UserId, SourceRecordId, TargetUser, Operation) on SourceRecordId,UserId
+| project TimeGenerated,ClientIP, UserId,AuditingEnabled,Operation,TargetUser,ResultStatus,RecordType,UserType,SourceRecordId, Parameters,ExternalAccess, AppId, AppName
+```
