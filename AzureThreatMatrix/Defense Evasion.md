@@ -53,6 +53,7 @@ OfficeActivity
 ```
 ## Disable Mailbox Auditing
 ### Emulation
+
 ```
 # Get to know the mailbox auditing enabled for the organization
 Get-OrganizationConfig | Format-List AuditDisabled
@@ -64,6 +65,8 @@ Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $tru
 #Bypass Detection query using -Confirm parameter
 Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true -Confirm:$true 
 Set-MailboxAuditBypassAssociation -Identity <UserEmail> -AuditBypassEnabled $true -Confirm:$false
+#Attempt to disable mailbox auditing for a user
+Set-Mailbox -Identity "<UserEmail>" -AuditEnabled $false 
 ```
 ### Detection
 The following query detects _mailbox auditing bypass_. This detection also identifies attempts to bypass detection by appending the Confirm parameter.
