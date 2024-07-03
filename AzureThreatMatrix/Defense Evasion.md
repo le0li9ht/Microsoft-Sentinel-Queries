@@ -80,7 +80,7 @@ OfficeActivity
 | where ResultStatus=="True"
 | project TimeGenerated, Operation, UserId, TargetUser,  AuditBypassEnabled, ClientIP, UserType, RecordType,ResultStatus,ExternalAccess, Parameters
 ```
-The below query detects the attempts to disable to mailbox auditing via Set-Mailbox command.  
+The below query detects the attempts to disable mailbox auditing via Set-Mailbox command.  
 ```
 OfficeActivity
 | where TimeGenerated >ago(1h)
