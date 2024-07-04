@@ -8,7 +8,6 @@ Get-AdminAuditLogConfig |Select-Object -ExpandProperty UnifiedAuditLogIngestionE
 Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $false
 ```
 
-###
 ### Detection:
 #### OfficeActivity logs
 The below KQL query detects disabling of Unified Audit Logs.  
