@@ -1,6 +1,6 @@
 Auditing Licenses
 ```
-//Final One: Find Newly Assigned Licenses
+//Find Newly Assigned Licenses
 AuditLogs
 | where TimeGenerated > ago(10d)
 | where OperationName == "Change user license"
@@ -20,8 +20,8 @@ AuditLogs
 //| extend AssignedLicense=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0]
 | extend AssignedLicenseNewValue=array_sort_asc(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0].NewValue)
 | extend AssignedLicenseOldValue=array_sort_asc(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0].OldValue)
-| where isnotempty(AssignedLicenseNewValue[0])
-| where array_length(AssignedLicenseNewValue) > array_length(AssignedLicenseOldValue)
+| where isnotempty(AssignedLicenseNewValue[0])  // Conditon that evades any errors or other cases.
+| where array_length(AssignedLicenseNewValue) > array_length(AssignedLicenseOldValue) // Newvalues always greater than older one's since a new license is being assigned so count will be high.
 | mv-expand AssignedLicenseOldValue, AssignedLicenseNewValue
 | extend AssignedLicenseOldValue=iff(isnotempty(AssignedLicenseOldValue), parse_json(strcat('{"',substring(replace_string(replace_string(replace_string(replace_string(replace_string(tostring(parse_json(AssignedLicenseOldValue)),'=[','":["'),"=",'":"'),",",'","'),"]]",'"]}'),'" ','"'),1))),parse_json(''))
 | extend OldSkuName=tostring(AssignedLicenseOldValue.SkuName)
