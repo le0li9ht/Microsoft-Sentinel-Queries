@@ -55,8 +55,10 @@ AuditLogs
 | extend AssignedLicenseNewValue=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0].NewValue
 | extend AssignedLicenseOldValue=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[0].OldValue
 | extend AssignedLicenseDetails=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2]
-| extend AssignedLicenseDetailsNewValue=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].NewValue
-| extend AssignedLicenseDetailsOldValue=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].OldValue
+//| extend AssignedLicenseDetailsNewValue=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].NewValue
+//| extend AssignedLicenseDetailsOldValue=parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].OldValue
+| extend AssignedLicenseDetailsNewValue=iff(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].Name=="LicenseAssignmentDetail",parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].NewValue,parse_json(''))
+| extend AssignedLicenseDetailsOldValue=iff(parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].Name=="LicenseAssignmentDetail",parse_json(tostring(parse_json(LicenceUpdateProperties).targetUpdatedProperties))[2].OldValue,parse_json(''))
 | mv-expand AssignedLicenseNewValue, AssignedLicenseDetailsNewValue
 //convert the string data to proper dictionary
 | extend AssignedLicenseNewValue=iff(isnotempty(AssignedLicenseNewValue),parse_json(strcat('{"',substring(replace_string(replace_string(replace_string(replace_string(replace_string(tostring(parse_json(AssignedLicenseNewValue)),'=[','":["'),"=",'":"'),",",'","'),"]]",'"]}'),'" ','"'),1))),parse_json(''))
