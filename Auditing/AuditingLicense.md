@@ -1,4 +1,5 @@
 Auditing Licenses
+```
 //Final One: Find Newly Assigned Licenses
 AuditLogs
 | where TimeGenerated > ago(10d)
@@ -43,3 +44,4 @@ InitiatedPrincipalId=make_list(InitiatedPrincipalId)[0]
 by CorrelationId
 | extend ['Assigned New Licenses']=tostring(set_difference(NewSkuName,OldSkuName))
 | project TimeGenerated, OperationName, InitiatedUser,InitiatedApp,UserAgent,ipAddress,TargetUser,['Assigned New Licenses'],InitiatedVia,InitiatedPrincipalId,LicenceUpdateProperties, OldSkuName, NewSkuName
+```
