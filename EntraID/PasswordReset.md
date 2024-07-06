@@ -119,7 +119,7 @@ AuditLogs
 ```
 
 
-### Successfull Password Reset Via SIM Swapping
+### Successful Password Reset Via SIM Swapping
 If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.
 
 Query for detecting SSPR flows completed via SMS or phone call options from rare IP.  
