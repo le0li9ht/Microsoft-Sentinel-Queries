@@ -209,6 +209,47 @@ AuditLogs
 | summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
 | where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
 ```
+MFA registration or MFA update followed by SSPR password reset.
+```
+AuditLogs
+| where TimeGenerated >ago(1d)
+| where OperationName =~"Reset password (self-service)"
+| where ResultDescription=="Successfully completed reset."
+| where Result=="success"
+| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName)
+| project ResetTime=TimeGenerated, InitiatedUser, TargetUser, OperationName, Result
+| join kind=inner (
+AuditLogs
+| where TimeGenerated >ago(1d)
+| where OperationName in~ ("User registered all required security info","User registered security info","User changed default security info","Admin registered security info","User changed default security info","Admin updated security info","User updated security info")
+//| where Result=="success"
+| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName)
+| project ["MFARegistration/Update Time"]=TimeGenerated, InitiatedUser, TargetUser, Result, OperationName) on TargetUser
+| where ['MFARegistration/Update Time']>ResetTime
+```
+
+MFA method deleted followed by password reset.
+```
+AuditLogs
+| where TimeGenerated >ago(1d)
+| where OperationName =~"Reset password (self-service)"
+| where ResultDescription=="Successfully completed reset."
+| where Result=="success"
+| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName)
+| project ResetTime=TimeGenerated, InitiatedUser, TargetUser, OperationName, Result
+| join kind=inner (
+AuditLogs
+| where TimeGenerated >ago(1d)
+| where OperationName in~ ("Admin deleted security info","User deleted security info")
+//| where Result=="success"
+| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName)
+| project ["MFARegistration/Update Time"]=TimeGenerated, InitiatedUser, TargetUser, Result, OperationName) on TargetUser
+| where ['MFARegistration/Update Time']>ResetTime
+```
 
 ### References  
 https://cloudsecurityalliance.org/blog/2023/08/09/behind-the-breach-self-service-password-reset-sspr-abuse-in-azure-ad  
