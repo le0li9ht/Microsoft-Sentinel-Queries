@@ -1,4 +1,5 @@
 ## Microsoft Entra self-service password reset
+In Entra ID (Azure AD), different operation names are logged based on the method used for password resets, allowing you to distinguish between resets performed by users themselves and those performed by admins on their behalf.
 ### Admins resetting password on behalf of user.
 #### Password Reset by admin
 KQL Query for finding password reset operations performed by admins on behalf of a user
