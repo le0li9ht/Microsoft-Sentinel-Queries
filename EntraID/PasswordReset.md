@@ -237,7 +237,7 @@ AuditLogs
 | where ['MFA Method Deletion Time']>ResetTime
 | extend ['Reset to MFA deletion TimeGap']=datetime_diff('minute',["MFARegistration/Update Time"],ResetTime)
 ```
-### Successful Password Reset From TOR IPs irrespective of any method
+### Successful Password Reset From TOR IPs irrespective of any reset method
 Successful password reset from TOR IPs using any methods.
 ```
 let TorExitNodes=externaldata(ipAddress:string)[
