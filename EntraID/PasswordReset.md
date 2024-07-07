@@ -222,7 +222,7 @@ AuditLogs
 | join kind=inner (
 AuditLogs
 | where TimeGenerated >ago(1d)
-| where OperationName in~ ("User registered all required security info","User registered security info","User changed default security info","Admin registered security info","User changed default security info","Admin updated security info","User updated security info")
+| where OperationName in~ ("User registered all required security info","User registered security info","Admin registered security info","User changed default security info","Admin updated security info","User updated security info")
 //| where Result=="success"
 | extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
 | extend TargetUser=tostring(TargetResources[0].userPrincipalName)
