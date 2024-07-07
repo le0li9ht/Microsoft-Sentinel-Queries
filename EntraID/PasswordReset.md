@@ -1,5 +1,6 @@
 ## Microsoft Entra self-service password reset
-### Password Reset by admin
+### Admins resetting password on behalf of user.
+#### Password Reset by admin
 KQL Query for finding password reset operations performed by admins on behalf of a user
 ```
 AuditLogs
@@ -45,7 +46,8 @@ AuditLogs
 | extend IpAddress=tostring(InitiatedBy.user.ipAddress)
 | project TimeGenerated, OperationName,ActivityDisplayName, Actor,IpAddress, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
 ```
-### Reset Password Via Entra Reset Password Service
+### Self Service Password Reset
+#### Reset Password Via Entra Reset Password Service
 Below KQL query finds Successful password reset via SSPR method from [Entra Reset Password Service or Microsoft Online Password Reset](https://passwordreset.microsoftonline.com/).
 ```
 AuditLogs
@@ -97,8 +99,8 @@ AuditLogs
 | where ResultReason=="User's account has insufficient authentication methods defined. Add authentication info to resolve this "
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress,ResultDescription, AdditionalDetails,Result, CorrelationId
 ```
-
-### SSPR Reconnaisance
+### Compromising accounts via SIM Swapping followed by SSPR abuse.
+#### SSPR Reconnaisance
 Examining SSPR initiations that were never completed from suspicious IPs can serve as an early warning of potential recon. A burst of these activities for multiple accounts—especially high-value targets—reveals that your organization is likely being targeted and can serve as justification for the reconfiguration or disabling of SSPR.
 
 KQL Query for identifying SSPR reconnaisance  
@@ -122,8 +124,7 @@ AuditLogs
 | project TimeGenerated, OperationName, Initiatedby,TargetUser,IpAddress, AdditionalDetails,Result, CorrelationId
 ```
 
-
-### Successful Password Reset Via SIM Swapping
+#### Query for detecting SSPR flows completed via SMS or phone call options from rare IP.  
 If a SSPR flow is completed via SMS or phone call options from a rare and suspicious IP, it may indicate a potential SIM Swap attack that was then used to perform SSPR.
 
 Query for detecting SSPR flows completed via SMS or phone call options from rare IP.  
@@ -160,7 +161,7 @@ SigninLogs
 | where ResultType == 0 ) 
 on IPAddress
 ```
-Query for detecting SSPR flows completed via SMS or phone call options from TOR IP.  
+#### Query for detecting SSPR flows completed via SMS or phone call options from TOR IP.  
 ```
 let TorExitNodes=externaldata(ipAddress:string)[
 "https://check.torproject.org/torbulkexitlist"];
@@ -192,28 +193,8 @@ AuditLogs
 // User started the mobile app notification verification option
 | where not(SSPRFlowEvents has_any ("mobile app notification","mobile app code verification","email verification option","security questions verification option"))
 ```
-### Successful Password Reset From TOR IPs
-Successful password reset from TOR IPs using any methods.
-```
-let TorExitNodes=externaldata(ipAddress:string)[
-"https://check.torproject.org/torbulkexitlist"];
-AuditLogs
-| where TimeGenerated >ago(90d)
-| where LoggedByService=="Self-service Password Management"
-| where OperationName=="Self-service password reset flow activity progress"
-| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
-| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
-| extend IPAddress=tostring(InitiatedBy.user.ipAddress)
-| where IPAddress in (TorExitNodes)
-//Only Verifications should present 
-// User started the mobile SMS verification option
-// User completed the mobile SMS verification option
-// User completed the mobile voice call verification option
-// User started the mobile voice call verification option
-| summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
-| where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
-```
-MFA registration or MFA update followed by SSPR password reset.
+
+#### MFA registration or MFA update followed by SSPR password reset.
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
@@ -234,7 +215,7 @@ AuditLogs
 | extend ['Reset to MFA change TimeGap']=datetime_diff('minute',["MFARegistration/Update Time"],ResetTime)
 ```
 
-MFA method deletion followed by password reset.
+#### MFA method deletion followed by password reset.
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
@@ -254,6 +235,27 @@ AuditLogs
 | project ['MFA Method Deletion Time']=TimeGenerated, InitiatedUser, TargetUser, Result, OperationName) on TargetUser
 | where ['MFA Method Deletion Time']>ResetTime
 | extend ['Reset to MFA deletion TimeGap']=datetime_diff('minute',["MFARegistration/Update Time"],ResetTime)
+```
+### Successful Password Reset From TOR IPs irrespective of any method
+Successful password reset from TOR IPs using any methods.
+```
+let TorExitNodes=externaldata(ipAddress:string)[
+"https://check.torproject.org/torbulkexitlist"];
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName=="Self-service password reset flow activity progress"
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IPAddress=tostring(InitiatedBy.user.ipAddress)
+| where IPAddress in (TorExitNodes)
+//Only Verifications should present 
+// User started the mobile SMS verification option
+// User completed the mobile SMS verification option
+// User completed the mobile voice call verification option
+// User started the mobile voice call verification option
+| summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
+| where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
 ```
 
 ### References  
