@@ -230,7 +230,7 @@ AuditLogs
 | where ['MFARegistration/Update Time']>ResetTime
 ```
 
-MFA method deleted followed by password reset.
+MFA method deletion followed by password reset.
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
