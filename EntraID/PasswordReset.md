@@ -46,7 +46,7 @@ AuditLogs
 | project TimeGenerated, OperationName,ActivityDisplayName, Actor,IpAddress, TargetUser, LoggedByService, Result, ResultDescription, CorrelationId, AdditionalDetails
 ```
 ### Reset Password Via Entra Reset Password Service
-Successful password reset via SSPR method from Entra Reset Password Service.
+Below KQL query finds Successful password reset via SSPR method from [Entra Reset Password Service or Microsoft Online Password Reset](https://passwordreset.microsoftonline.com/).
 ```
 AuditLogs
 | where TimeGenerated >ago(90d)
@@ -66,8 +66,9 @@ AuditLogs
 | where Result=="success"
 | extend User=InitiatedBy.user.userPrincipalName
 ```
-#### Multiple user password resets via SSPR performed from a single IP address.
-Expected FPs:  
+#### Multiple user password resets via SSPR method performed from a single IP address.
+The query below identifies multiple user password resets via the Self-Service Password Reset (SSPR) method performed from a single IP address.  
+**Expected FPs:**  
 * Users are within the same subnet, such as within a company network sharing a common public IP.  
 * A DevOps or developer may be changing passwords for both test accounts and their own account simultaneously.
 
@@ -82,8 +83,8 @@ AuditLogs
 | extend Actor=InitiatedBy.user.userPrincipalName
 | extend IpAddress=tostring(InitiatedBy.user.ipAddress)
 | extend User=InitiatedBy.user.userPrincipalName
-| summarize min(TimeGenerated),max(TimeGenerated),Useset=make_set(Actor), count() by IpAddress
-| where array_length(Useset)>1
+| summarize min(TimeGenerated),max(TimeGenerated),UserList=make_set(Actor), count() by IpAddress
+| where array_length(UseList)>1
 
 ```
 
