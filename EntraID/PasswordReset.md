@@ -247,8 +247,9 @@ AuditLogs
 //| where Result=="success"
 | extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
 | extend TargetUser=tostring(TargetResources[0].userPrincipalName)
-| project ["MFARegistration/Update Time"]=TimeGenerated, InitiatedUser, TargetUser, Result, OperationName) on TargetUser
-| where ['MFARegistration/Update Time']>ResetTime
+| project ['MFA Method Deletion Time']=TimeGenerated, InitiatedUser, TargetUser, Result, OperationName) on TargetUser
+| where ['MFA Method Deletion Time']>ResetTime
+| extend ['Reset to MFA deletion TimeGap']=datetime_diff('minute',["MFARegistration/Update Time"],ResetTime)
 ```
 
 ### References  
