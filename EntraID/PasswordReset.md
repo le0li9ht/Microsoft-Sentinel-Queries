@@ -15,6 +15,7 @@ AuditLogs
 ```
 
 #### Find multiple password reset by admin
+To find password reset operations performed by admins on behalf of multiple users in Entra Id
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
