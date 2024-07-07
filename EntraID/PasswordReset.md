@@ -1,7 +1,6 @@
 ## Microsoft Entra self-service password reset
 ### Password Reset by admin
 KQL Query for finding password reset operations performed by admins on behalf of a user
-
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
@@ -31,7 +30,10 @@ AuditLogs
 ```
 
 ### Voluntary, or forced (due to expiry) password change.
-Password change during expired password time.
+"Change password (self-service)" operation is generated during following events
+* Password change during expired password time
+* If user voluntarily changes his/her password from [mysignins portal](https://mysignins.microsoft.com/security-info/password/change) or [myaccount portal(going to deprecate)](https://account.activedirectory.windowsazure.com/ChangePassword.aspx).
+* When an admin resets a user's password, requiring the user to reset it again (often done when a user first joins the organization or if their password is reset for security reasons)
 ```
 AuditLogs
 | where TimeGenerated >ago(1d)
