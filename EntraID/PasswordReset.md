@@ -239,7 +239,7 @@ AuditLogs
 | where ['MFA Method Deletion Time']>ResetTime
 | extend ['Reset to MFA deletion TimeGap']=datetime_diff('minute',['MFA Method Deletion Time'],ResetTime)
 ```
-### Successful Password Reset From TOR IPs irrespective of any reset method
+### Successful SSPR Password Reset From TOR IPs
 Successful password reset from TOR IPs using any methods.
 ```
 let TorExitNodes=externaldata(ipAddress:string)[
@@ -259,6 +259,25 @@ AuditLogs
 // User started the mobile voice call verification option
 | summarize StartTime=min(TimeGenerated),EndTime=max(TimeGenerated),SSPRFlowEvents=make_set(ResultReason),count() by CorrelationId, TargetUser,IPAddress  
 | where SSPRFlowEvents has_any ("User successfully reset password","Successfully completed reset") //Successfull password reset.
+```
+
+### Successful SSPR Password Reset from TOR IPs irrespective of any reset method.
+```
+let TorExitNodes=externaldata(ipAddress:string)[
+"https://check.torproject.org/torbulkexitlist"];
+AuditLogs
+| where TimeGenerated >ago(90d)
+| where LoggedByService=="Self-service Password Management"
+| where OperationName has_any ("Change password (self-service)","Reset password (self-service)","Reset password (by admin)")
+| extend TargetUser = tostring(TargetResources[0].userPrincipalName)
+| extend Initiatedby=tostring(InitiatedBy.user.userPrincipalName)
+| extend IPAddress=tostring(InitiatedBy.user.ipAddress)
+| where IPAddress in (TorExitNodes)
+//Only Verifications should present 
+// User started the mobile SMS verification option
+// User completed the mobile SMS verification option
+// User completed the mobile voice call verification option
+// User started the mobile voice call verification option
 ```
 
 ### References  
