@@ -76,18 +76,19 @@ The query below identifies multiple user password resets via the Self-Service Pa
 * A DevOps or developer may be changing passwords for both test accounts and their own account simultaneously.
 
 ```
+let threshold=2;
 AuditLogs
-| where TimeGenerated >ago(1d)
+| where TimeGenerated >ago(90d)
 | where LoggedByService=="Self-service Password Management"
 | where OperationName=="Reset password (self-service)"
 | where ResultDescription=="Successfully completed reset."
 | where Result=="success"
-| extend TargetUser=TargetResources[0].userPrincipalName
-| extend Actor=InitiatedBy.user.userPrincipalName
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName)
+| extend Actor=tostring(InitiatedBy.user.userPrincipalName)
 | extend IpAddress=tostring(InitiatedBy.user.ipAddress)
 | extend User=InitiatedBy.user.userPrincipalName
-| summarize min(TimeGenerated),max(TimeGenerated),UserList=make_set(Actor), count() by IpAddress
-| where array_length(UseList)>1
+| summarize min(TimeGenerated),max(TimeGenerated),UserList=make_set(TargetUser), count() by IpAddress
+| where array_length(UserList)>threshold
 
 ```
 
