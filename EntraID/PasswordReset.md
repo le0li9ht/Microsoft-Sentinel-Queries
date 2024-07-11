@@ -211,7 +211,8 @@ AuditLogs
 | where TimeGenerated >ago(1d)
 | where OperationName in~ ("User registered all required security info","User registered security info","Admin registered security info","User changed default security info","Admin updated security info","User updated security info")
 //| where Result=="success"
-| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName
+| extend InitiatedUser=tostring(InitiatedBy.user.userPrincipalName)
+| extend TargetUser=tostring(TargetResources[0].userPrincipalName)
 | project ["MFARegistration/Update Time"]=TimeGenerated, InitiatedUser, TargetUser, Result, OperationName) on TargetUser
 | where ['MFARegistration/Update Time']>ResetTime
 | extend ['Reset to MFA change TimeGap']=datetime_diff('minute',["MFARegistration/Update Time"],ResetTime)
