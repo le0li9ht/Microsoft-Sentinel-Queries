@@ -6,6 +6,8 @@ WindowsEvent
 | where EventID==5001
 | project TimeGenerated, Computer, EventID,Operation="RealtimeProtectionDisbaled", Product=EventData["Product Name"], Version=EventData['Product Version'], Channel, Provider 
 ```
+Technique: T1564.012- Hide Artifacts: File/Path Exclusions 
+Exclusion of filepaths
 ```
 //Defender Path Exclusion
 WindowsEvent
