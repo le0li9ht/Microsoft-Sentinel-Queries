@@ -1,4 +1,6 @@
-certutil can be used to install browser root certificates as a precursor to performing Adversary-in-the-Middle between connections to banking websites. Example command: certutil -addstore -f -user ROOT ProgramData\cert512121.der  
+certutil can be used to install browser root certificates as a precursor to performing Adversary-in-the-Middle between connections to banking websites.   
+Example command:   
+  _certutil -addstore -f -user ROOT ProgramData\cert512121.der_  
 ```
 SecurityEvent
 | where EventID==4688
