@@ -1,4 +1,5 @@
-```az login  
+```
+az login  
 az group create --name RedTeamSentinel --location southeastasia  
 //Find the userId  
 az ad user show --id "user@example.com" --query "id"  
