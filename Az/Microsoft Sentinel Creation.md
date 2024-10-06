@@ -1,4 +1,4 @@
-az login  
+```az login  
 az group create --name RedTeamSentinel --location southeastasia  
 //Find the userId  
 az ad user show --id "user@example.com" --query "id"  
@@ -9,5 +9,4 @@ az role definition list --name "Log Analytics Contributor"
 az group list --query "[].{name:name, id:id}" --output tsv  
 //Assign the role   
 az role assignment create --assignee "User@example.com" --role "92aaf0da-9dab-42b6-94a3-d43ce8d16293" --scope "subscriptions/<subscriptionid>/resourceGroups/RedTeamSentinel"  
-
-
+```
