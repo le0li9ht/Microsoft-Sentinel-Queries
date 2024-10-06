@@ -13,4 +13,5 @@ role_id=$(az role definition list --name "Log Analytics Contributor" --query "[]
 resourceid=$(az group list --query "[].id" --output tsv)
 //Assign the role   
 az role assignment create --assignee $userid --role "$role_id" --scope "$resourceid"
+az monitor log-analytics workspace create --resource-group RedTeamSentinel --workspace-name RedTeamSentinel
 
