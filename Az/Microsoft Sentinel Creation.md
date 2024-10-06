@@ -13,7 +13,11 @@ role_id=$(az role definition list --name "Log Analytics Contributor" --query "[]
 resourceid=$(az group list --query "[].id" --output tsv)
 //Assign the role   
 az role assignment create --assignee $userid --role "$role_id" --scope "$resourceid"
+//Assign the Microsoft Sentinel Contributor Role
+role_id=$(az role definition list --name "Microsoft Sentinel Contributor" --query "[].name" -o tsv)
+az role assignment create --assignee $userid --role "$role_id" --scope "$resourceid"
 //Create Log Analytics workspace
 az monitor log-analytics workspace create --resource-group RedTeamSentinel --workspace-name RedTeamSentinel
 az sentinel workspace create --resource-group "RedTeamSentinel" --workspace-name "RedTeamSentienl"
+
 az rest --method PUT --uri "https://management.azure.com/subscriptions/<subscriptionid>/resourceGroups/RedTeamSentinel/providers/Microsoft.OperationalInsights/workspaces/RedTeamSentinel/providers/Microsoft.SecurityInsights/onboardingStates/default?api-version=2024-03-01" --body '{"properties": {"customerManagedKey": false}}'
