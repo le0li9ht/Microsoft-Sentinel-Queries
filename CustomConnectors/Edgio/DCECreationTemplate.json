@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataCollectionEndpointName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the name of the Data Collection Endpoint to create."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "southeastasia",
+            "metadata": {
+                "description": "Specifies the location for the Data Collection Endpoint."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Insights/dataCollectionEndpoints",
+            "name": "[parameters('dataCollectionEndpointName')]",
+            "location": "[parameters('location')]",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "networkAcls": {
+                    "publicNetworkAccess": "Enabled"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "dataCollectionEndpointId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]"
+        }
+    }
+}
