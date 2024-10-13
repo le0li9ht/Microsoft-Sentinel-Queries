@@ -1,0 +1,186 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataCollectionRuleName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the name of the Data Collection Rule to create."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "southeastasia",
+            "metadata": {
+                "description": "Specifies the location in which to create the Data Collection Rule."
+            }
+        },
+        "workspaceResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Log Analytics workspace to use."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the workspaceId of Log Analytics workspace to use."
+            }
+        },
+      "dceLoginestionUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "Provide the Log Ingestion URL from your DCE(Data Collection Rule)"
+            }
+        },
+        "endpointResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Data Collection Endpoint to use."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Insights/dataCollectionRules",
+            "name": "[parameters('dataCollectionRuleName')]",
+            "location": "[parameters('location')]",
+            "apiVersion": "2023-03-11",
+            "kind": "Direct",
+            "properties": {
+                "dataCollectionEndpointId": "[parameters('endpointResourceId')]",
+                "logsIngestion": {
+                    "endpoint": "[parameters('dceLoginestionUrl')]"
+                },
+                "streamDeclarations": {
+                    "Custom-Edgio": {
+                        "columns": [
+                            {
+                                "name": "timestamp",
+                                "type": "real"
+                            },
+                            {
+                                "name": "agent_id",
+                                "type": "string"
+                            },
+                            {
+                                "name": "service",
+                                "type": "string"
+                            },
+                            {
+                                "name": "account_number",
+                                "type": "string"
+                            },
+                            {
+                                "name": "seq_num",
+                                "type": "int"
+                            },
+                            {
+                                "name": "user_agent",
+                                "type": "string"
+                            },
+                            {
+                                "name": "url",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_ip",
+                                "type": "string"
+                            },
+                            {
+                                "name": "referer",
+                                "type": "string"
+                            },
+                            {
+                                "name": "host",
+                                "type": "string"
+                            },
+                            {
+                                "name": "uuid",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_country_code",
+                                "type": "string"
+                            },
+                            {
+                                "name": "waf_profile_name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "waf_profile_type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "waf_instance_name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "sub_events_count",
+                                "type": "int"
+                            },
+                            {
+                                "name": "sub_events",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "rule_tags",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "rule_message",
+                                "type": "string"
+                            },
+                            {
+                                "name": "action_type",
+                                "type": "string"
+                            },
+                            {
+                                "name": "server_port",
+                                "type": "int"
+                            },
+                            {
+                                "name": "client_country",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_city",
+                                "type": "string"
+                            },
+                            {
+                                "name": "client_tls_ja3_md5",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('workspaceResourceId')]",
+                            "name": "[parameters('workspaceId')]"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "Custom-Edgio"
+                        ],
+                        "destinations": [
+                            "[parameters('workspaceId')]"
+                        ],
+                        "transformKql": "let fromUnixTime=(t: real){datetime(1970-01-01) + t * 1sec}; source | extend TimeGenerated=now(),TimeStamp=fromUnixTime(timestamp) |  project TimeGenerated,TimeStamp,AgentId=tostring(agent_id), Seqno=seq_num,ProductName=service,AccountNo=account_number,UserAgent=user_agent,Url=url,ClientIP=client_ip,Referer=referer,Host=host,uuid=uuid,CountryCode=client_country_code,SubEventCount=sub_events_count,SubEvents=parse_json(sub_events),RuleTags=parse_json(rule_tags),RuleMessage=rule_message,ActionType=action_type,ServerPort=server_port,CountryName=client_country,City=client_city,WafProfile=waf_profile_name,WafProfileType=waf_profile_type,WafInstanceName=waf_instance_name,ClientTlsJa3md5=tostring(client_tls_ja3_md5)",
+                        "outputStream": "Custom-Edgio_CL"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "dataCollectionRuleId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Insights/dataCollectionRules', parameters('dataCollectionRuleName'))]"
+        }
+    }
+}
