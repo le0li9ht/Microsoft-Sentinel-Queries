@@ -1,4 +1,4 @@
-### Huwei Switch Parser
+### Huawei Switch Parser
 The following KQL parser works for the Huawei CloudEngine 9800,8800,6800,5800 switches.
 ```
 Syslog
