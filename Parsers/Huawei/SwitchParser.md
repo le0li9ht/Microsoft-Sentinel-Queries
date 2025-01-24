@@ -1,5 +1,5 @@
 ### Huwei Switch Parser
-The following parser works for the Huawei CloudEngine 9800,8800,6800,5800 switches.
+The following KQL parser works for the Huawei CloudEngine 9800,8800,6800,5800 switches.
 ```
 Syslog
 //| where Facility=="local2" // If the huawei logs are coming to specific facility filter the same.
