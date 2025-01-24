@@ -3,6 +3,7 @@ The following parser works for the Huawei CloudEngine 9800,8800,6800,5800 switch
 ```
 Syslog
 //| where Facility=="local2" // If the huawei logs are coming to specific facility filter the same.
+//| where SyslogMessage startswith "%%" All Huawei logs are started with %%
 //| where Computer contains "<SwitchIPs>" // Mention your swtich IPs
 | extend Config=extract(@"%%\d+(.+)\(.\)",1,SyslogMessage)
 | extend LogVersion=extract(@"%%(\d+)",1,SyslogMessage)
