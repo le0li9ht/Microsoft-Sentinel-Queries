@@ -1,3 +1,5 @@
+Nutanix audit logs parser.  
+```
 let Audit=() {
     Syslog
     | where ProcessName in ("audispd", "auditd", "audisp-remote")
@@ -151,3 +153,4 @@ let CRED=() {
         SyslogMessage
 };
 (union isfuzzy=true MostTypes, ErrorAudit, EXECVE, AVC, PROCTITLE, PROCTITLEHEX, CRED)
+```
