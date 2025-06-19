@@ -5,7 +5,7 @@ let Audit=() {
     | where ProcessName in ("audispd", "auditd", "audisp-remote")
     | where SyslogMessage startswith "node"
     | parse SyslogMessage with * "node=" NodeName " type=" Type " msg=audit(" Timestamp: real ":" SerialNumber "): " Message
-    | extend ['Timestamp[IST]']=datetime_add('minute',30,datetime_add('hour', 5, unixtime_seconds_todatetime(Timestamp))) //IST TimeZone.
+    | extend ['Timestamp[IST]']=datetime_add('minute',30,datetime_add('hour', 5, unixtime_seconds_todatetime(Timestamp))) //IST TimeZone. Change it according to your environment.
     | extend SerialNumber=extract(@'msg=audit\([0-9.]+:([0-9]+)\):', 1, SyslogMessage)
     | project
         TimeGenerated,
