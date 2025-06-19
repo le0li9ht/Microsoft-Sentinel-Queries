@@ -1,4 +1,9 @@
 Nutanix audit logs parser.  
+Note: Add the following line to filter logs only from your Nutanix servers.  
+```
+| where Computer contains "NutanixServer"
+```
+
 ```
 let Audit=() {
     Syslog
