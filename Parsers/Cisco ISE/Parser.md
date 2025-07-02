@@ -1,6 +1,7 @@
 Cisco ISE parser:
 
 ```
+//Author: Ashok Krishna Vemuri
 let AdminandPostureEvents=Syslog
 | where ProcessName has_any ("CISE", "CSCO")
 | where ProcessName !contains "CISE_MONITORING_DATA_PURGE_AUDIT"
