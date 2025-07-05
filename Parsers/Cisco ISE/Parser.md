@@ -51,5 +51,21 @@ Syslog
 | extend MessageText=extract(@" \+\d+ \d+ [A-Z]+ .*?: (.*?), ",1,SyslogMessage)
 | extend FullMesssage=extract(@"(\b\w+=.*)", 1, SyslogMessage)
 | project Timestamp,Computer,ProcessName,HostIP,MessageCode, Severity, MessageClass, MessageText, FullMesssage, SyslogMessage;
-union isfuzzy=true AdminandPostureEvents,PurgeEvents
+let Failures=Syslog
+| where ProcessName=~'CISE_Alarm'
+//| where ProcessName has_any ("CISE", "CSCO")
+| extend Severity = extract(@"\b(NOTICE|INFO|WARN|WARNING|ERROR|FATAL|DEBUG|CRITICAL)\b", 1, SyslogMessage)
+| extend Alarm = extract(@": (.*?) [A-Za-z\s]+=", 1, SyslogMessage)
+| extend Alarm=iff(isempty(Alarm),extract(@": (.*)", 1, SyslogMessage),trim_end(@'\.',trim_end(':',Alarm)))
+| extend Message = extract(@"(\b\w+=.*)", 1, SyslogMessage)
+| project
+    TimeGenerated,
+    EventTime,
+    Computer,
+    ProcessName,
+    Severity,
+    Alarm,
+    Message,
+    SyslogMessage;
+union isfuzzy=true AdminandPostureEvents,PurgeEvents,Failures
 ```
