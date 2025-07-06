@@ -4,7 +4,7 @@ Note: Customize according to your environment since in some environments the cis
 //Author: Ashok Krishna Vemuri
 let AdminandPostureEvents=Syslog
 | where ProcessName has_any ("CISE", "CSCO")
-| where ProcessName !contains "CISE_MONITORING_DATA_PURGE_AUDIT"
+| where ProcessName !in ("CISE_MONITORING_DATA_PURGE_AUDIT","CISE_Alarm")
 | extend SegmetnId=extract(@"^(\d+) \d{1} \d{1} ",1,SyslogMessage)
 | extend TotalSegment=extract(@"^\d+ (\d{1}) ",1,SyslogMessage)
 | extend SegmetNum=extract(@"^\d+ \d{1} (\d{1}) ",1,SyslogMessage)
@@ -22,7 +22,7 @@ let AdminandPostureEvents=Syslog
 | join kind=rightouter(
 Syslog
 | where ProcessName has_any ("CISE", "CSCO")
-| where ProcessName !contains "CISE_MONITORING_DATA_PURGE_AUDIT"
+| where ProcessName !in ("CISE_MONITORING_DATA_PURGE_AUDIT","CISE_Alarm")
 | extend SegmetnId=extract(@"^(\d+) \d{1} \d{1} ",1,SyslogMessage)
 | extend TotalSegment=extract(@"^\d+ (\d{1}) ",1,SyslogMessage)
 | extend SegmetNum=extract(@"^\d+ \d{1} (\d{1}) ",1,SyslogMessage)
