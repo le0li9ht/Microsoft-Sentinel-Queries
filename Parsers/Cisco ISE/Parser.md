@@ -65,7 +65,7 @@ let Failures=Syslog
 | extend Severity = extract(@"\b(NOTICE|INFO|WARN|WARNING|ERROR|FATAL|DEBUG|CRITICAL)\b", 1, SyslogMessage)
 | extend Alarm = extract(@": (.*?) [A-Za-z\s]+=", 1, SyslogMessage)
 | extend Alarm=iff(isempty(Alarm),extract(@": (.*)", 1, SyslogMessage),trim_end(@'\.',trim_end(':',Alarm)))
-| extend Message = extract(@"(\b\w+=.*)", 1, SyslogMessage)
+| extend FullMessage = extract(@"(\b\w+=.*)", 1, SyslogMessage)
 | project
     TimeGenerated,
     EventTime,
@@ -73,7 +73,7 @@ let Failures=Syslog
     ProcessName,
     Severity,
     Alarm,
-    Message,
+    FullMessage,
     SyslogMessage;
 union isfuzzy=true AdminandPostureEvents,PurgeEvents,Failures
 ```
