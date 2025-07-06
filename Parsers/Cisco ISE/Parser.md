@@ -8,7 +8,7 @@ let AdminandPostureEvents=Syslog
 | extend SegmetnId=extract(@"^(\d+) \d{1} \d{1} ",1,SyslogMessage)
 | extend TotalSegment=extract(@"^\d+ (\d{1}) ",1,SyslogMessage)
 | extend SegmetNum=extract(@"^\d+ \d{1} (\d{1}) ",1,SyslogMessage)
-| extend Timestamp=todatetime(extract(@" ?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) +",1,SyslogMessage))
+| extend Timestamp=todatetime(trim(" ",tostring(extract(@" ?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) +",1,SyslogMessage))))
 | extend TimeZone=extract(@" (\+\d{2}:\d{2}) ",1,SyslogMessage)
 | extend SequenceNum=extract(@" \+\d{2}:\d{2} (\d+) ",1,SyslogMessage)
 | extend MessageCode=extract(@" \+\d{2}:\d{2} \d+ (\d+) ",1,SyslogMessage)
@@ -26,7 +26,7 @@ Syslog
 | extend SegmetnId=extract(@"^(\d+) \d{1} \d{1} ",1,SyslogMessage)
 | extend TotalSegment=extract(@"^\d+ (\d{1}) ",1,SyslogMessage)
 | extend SegmetNum=extract(@"^\d+ \d{1} (\d{1}) ",1,SyslogMessage)
-| extend Timestamp=todatetime(extract(@" ?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) +",1,SyslogMessage))
+| extend Timestamp=todatetime(trim(" ",tostring(extract(@" ?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) +",1,SyslogMessage))))
 | extend TimeZone=extract(@" (\+\d{2}:\d{2}) ",1,SyslogMessage)
 | extend SequenceNum=extract(@" \+\d{2}:\d{2} (\d+) ",1,SyslogMessage)
 | extend MessageCode=extract(@" \+\d{2}:\d{2} \d+ (\d+) ",1,SyslogMessage)
@@ -43,7 +43,7 @@ let PurgeEvents=
 Syslog
 | where ProcessName has_any ("CISE", "CSCO")
 | where ProcessName=~"CISE_MONITORING_DATA_PURGE_AUDIT"
-| extend Timestamp=extract(@"?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) +",1,SyslogMessage)
+| extend Timestamp=todatetime(trim(" ",tostring(extract(@" ?(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) +",1,SyslogMessage))))
 //| extend SequenceNum=extract(@" \+\d{2}:\d{2} (\d+) ",1,SyslogMessage)
 | extend MessageCode=extract(@" \+\d+ (\d+) ",1,SyslogMessage)
 | extend Severity=extract(@" \+\d+ \d+ ([A-Z]+) ",1,SyslogMessage)
