@@ -1,5 +1,13 @@
 #### Cisco ISE parser:  
-Note: Customize according to your environment since in some environments the cisco ISE logs are not coming with segmentation and id values.  
+Note: Customize the parser to fit your environment, as some Cisco ISE deployments may not use segmentation or include certain ID fields. I’ve tested it against key categories listed below, but due to limited sample logs, I couldn’t validate the remaining ones. But it should work.  
+- CISE_MONITORING_DATA_PURGE_AUDIT
+- CISE_Failed_Attempts
+- CISE_Passed_Authentications
+- CISE_Alarm
+- CISE_Administrative_and_Operational_Audit
+- CISE_Posture_and_Client_Provisioning_Audit
+- CISE_Passed_Authentications
+
 ```
 //Author: Ashok Krishna Vemuri
 let AdminandPostureEvents=Syslog
